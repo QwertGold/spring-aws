@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':messaging:core')
+    implementation("software.amazon.awssdk:sns")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+}

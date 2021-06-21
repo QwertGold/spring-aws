@@ -1,0 +1,6 @@
+include 'messaging:core'
+include 'messaging:sqs'
+include 'messaging:sns'
+include 'messaging:persistence'
+include 'messaging:test-helper'
+include 'messaging:test'

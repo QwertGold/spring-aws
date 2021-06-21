@@ -1,0 +1,12 @@
+dependencies {
+    implementation project(':messaging:core')
+
+    implementation("software.amazon.awssdk:sqs")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+
+    testImplementation project(':messaging:test-helper')
+    testImplementation("org.testcontainers:localstack")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+    testImplementation("com.amazonaws:aws-java-sdk-sqs:1.11.500")    // required for localstack
+}

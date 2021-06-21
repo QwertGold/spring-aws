@@ -1,0 +1,21 @@
+ext {
+    // downgrading flyway to support older mysql
+    set('flyway.version', '5.2.4')
+}
+dependencies {
+    implementation project(':messaging:core')
+    implementation("org.springframework:spring-jdbc")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
+    implementation("org.springframework.boot:spring-boot-autoconfigure")
+
+    testImplementation project(':messaging:test-helper')
+    testImplementation project(':messaging:test')
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-jdbc")
+    testImplementation("org.flywaydb:flyway-core")
+    testImplementation("org.testcontainers:mysql")
+    testImplementation("mysql:mysql-connector-java")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.postgresql:postgresql")
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+}
