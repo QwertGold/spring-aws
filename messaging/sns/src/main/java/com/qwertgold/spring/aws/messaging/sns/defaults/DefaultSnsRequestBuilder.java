@@ -1,11 +1,10 @@
 package com.qwertgold.spring.aws.messaging.sns.defaults;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.annotations.VisibleForTesting;
 import com.qwertgold.spring.aws.messaging.core.domain.Header;
 import com.qwertgold.spring.aws.messaging.core.domain.Message;
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sns.spi.SnsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sns.spi.TopicArnResolver;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +18,16 @@ import java.util.stream.Collectors;
 public class DefaultSnsRequestBuilder implements SnsRequestBuilder {
 
     private final TopicArnResolver topicArnResolver;
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules()
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    private final JsonConverter jsonMapper;
 
     @Override
     public PublishRequest build(Message message) {
 
-        try {
-            PublishRequest.Builder builder = PublishRequest.builder()
-                    .topicArn(topicArnResolver.resolveDestination(message.getDestination().getDestination()))
-                    .message(json(message));
-            encodeHeaders(builder, message);
-            return builder.build();
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable to encode payload");
-        }
+        PublishRequest.Builder builder = PublishRequest.builder()
+                .topicArn(topicArnResolver.resolveDestination(message.getDestination().getDestination()))
+                .message(json(message));
+        encodeHeaders(builder, message);
+        return builder.build();
     }
 
     private void encodeHeaders(PublishRequest.Builder builder, Message message) {
@@ -52,8 +45,7 @@ public class DefaultSnsRequestBuilder implements SnsRequestBuilder {
                 .build();
     }
 
-    @VisibleForTesting
-    public String json(Message message) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(message.getPayload());
+    private String json(Message message) {
+        return jsonMapper.toJson(message);
     }
 }

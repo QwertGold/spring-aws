@@ -5,6 +5,7 @@ import com.qwertgold.spring.aws.messaging.TestPayloadDto;
 import com.qwertgold.spring.aws.messaging.core.EventPublisher;
 import com.qwertgold.spring.aws.messaging.core.EventPublisherFactory;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sqs.defaults.DefaultSqsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sqs.spi.SqsUrlResolver;
 import org.junit.Before;
@@ -38,6 +39,9 @@ public class SqsMessageRouterTest {
     @Autowired
     private DefaultSqsRequestBuilder sqsRequestBuilder;
 
+    @Autowired
+    private JsonConverter jsonConverter;
+
     @Before
     public void createQueue() {
         sqsClient.createQueue(CreateQueueRequest.builder().queueName(Helper.DESTINATION).build());
@@ -58,7 +62,7 @@ public class SqsMessageRouterTest {
         software.amazon.awssdk.services.sqs.model.Message awsMessage = response.messages().get(0);
 
         String body = awsMessage.body();
-        assertThat(body).isEqualTo(sqsRequestBuilder.json(payload));
+        assertThat(body).isEqualTo(jsonConverter.toJson(payload));
 
         String receiptHandle = awsMessage.receiptHandle();
         sqsClient.deleteMessage(DeleteMessageRequest.builder().queueUrl(queueUrl).receiptHandle(receiptHandle).build());

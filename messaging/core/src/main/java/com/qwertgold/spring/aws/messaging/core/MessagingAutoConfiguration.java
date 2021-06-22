@@ -1,6 +1,8 @@
 package com.qwertgold.spring.aws.messaging.core;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.qwertgold.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
+import com.qwertgold.spring.aws.messaging.core.defaults.DefaultJsonMapper;
 import com.qwertgold.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.qwertgold.spring.aws.messaging.core.spi.MessageRouterFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -16,6 +18,12 @@ public class MessagingAutoConfiguration {
     @ConditionalOnMissingBean(HeaderExtractor.class)
     public DefaultHeaderExtractor defaultHeaderExtractor() {
         return new DefaultHeaderExtractor();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(JsonMapper.class)
+    DefaultJsonMapper defaultJsonMapper() {
+        return new DefaultJsonMapper();
     }
 
     @Bean

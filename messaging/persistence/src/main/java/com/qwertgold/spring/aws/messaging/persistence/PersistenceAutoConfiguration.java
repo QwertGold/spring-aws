@@ -1,6 +1,7 @@
 package com.qwertgold.spring.aws.messaging.persistence;
 
 import com.qwertgold.spring.aws.messaging.core.EventPublisherFactory;
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
 import com.qwertgold.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
 import com.qwertgold.spring.aws.messaging.persistence.defaults.DefaultResendCalculator;
@@ -28,8 +29,8 @@ public class PersistenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MessageRepository.class)
-    public JdbcMessageRepository jdbcMessageRepository(JdbcTemplate jdbcTemplate, ResendCalculator resendCalculator) {
-        return new JdbcMessageRepository(jdbcTemplate, resendCalculator);
+    public JdbcMessageRepository jdbcMessageRepository(JdbcTemplate jdbcTemplate, ResendCalculator resendCalculator, JsonConverter jsonConverter) {
+        return new JdbcMessageRepository(jdbcTemplate, resendCalculator, jsonConverter);
     }
 
     @Bean

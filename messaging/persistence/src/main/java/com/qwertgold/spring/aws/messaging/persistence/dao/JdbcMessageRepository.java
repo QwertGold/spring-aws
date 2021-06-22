@@ -1,12 +1,8 @@
 package com.qwertgold.spring.aws.messaging.persistence.dao;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.type.MapType;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
-import com.qwertgold.spring.aws.messaging.core.domain.Header;
 import com.qwertgold.spring.aws.messaging.core.domain.Message;
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.core.util.IdGenerator;
 import com.qwertgold.spring.aws.messaging.persistence.spi.MessageRepository;
 import com.qwertgold.spring.aws.messaging.persistence.spi.ResendCalculator;
@@ -21,7 +17,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Repository implementation which uses Spring JDBC Template
@@ -44,36 +39,27 @@ public class JdbcMessageRepository implements MessageRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final ResendCalculator resendCalculator;
+    private final JsonConverter jsonConverter;
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .findAndRegisterModules()
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
-    private final MapType headerMapType = objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Header.class);
 
     @Override
     public String storeMessage(Message message) {
 
         String id = IdGenerator.generateId();
-        try {
-            jdbcTemplate.update(INSERT_QUERY,
-                    id,
-                    objectMapper.writeValueAsString(message.getPayload()),
-                    message.getDestination().getDestination(),
-                    message.getDestination().getDestinationType(),
-                    objectMapper.writeValueAsString(message.getHeaders()),
-                    Timestamp.from(Instant.now()),
-                    resendCalculator.calculateNextSend(message),
-                    message.getPayload().getClass().getName(),
-                    UNSENT,
-                    message.getClientId()
 
-            );
-            return id;
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Unable to store message", e);
-        }
-
+        jdbcTemplate.update(INSERT_QUERY,
+                id,
+                jsonConverter.toJson(message.getPayload()),
+                message.getDestination().getDestination(),
+                message.getDestination().getDestinationType(),
+                jsonConverter.toJson(message.getHeaders()),
+                Timestamp.from(Instant.now()),
+                resendCalculator.calculateNextSend(message),
+                message.getPayload().getClass().getName(),
+                UNSENT,
+                message.getClientId()
+        );
+        return id;
     }
 
     @Override
@@ -90,12 +76,12 @@ public class JdbcMessageRepository implements MessageRepository {
                 new PersistedMessageRowMapper());
     }
 
-    private Message createMessage(String payloadJson, String clazz, String destinationName, String destinationType, String headers, String clientId) throws ClassNotFoundException, JsonProcessingException {
-        Object payload = objectMapper.readValue(payloadJson, Class.forName(clazz));
+    private Message createMessage(String payloadJson, String clazz, String destinationName, String destinationType, String headers, String clientId) {
+        Object payload = jsonConverter.fromJsonByClassName(payloadJson, clazz);
         return new Message()
                 .setPayload(payload)
                 .setDestination(new Destination(destinationName, destinationType))
-                .setHeaders(objectMapper.readValue(headers, headerMapType))
+                .setHeaders(jsonConverter.readHeaders(headers))
                 .setClientId(clientId)
                 ;
     }
@@ -119,20 +105,16 @@ public class JdbcMessageRepository implements MessageRepository {
             String headers = rs.getString(5);
             String clazz = rs.getString(8);
             String clientId = rs.getString(10);
-            try {
-                return new PersistedMessage()
-                        .setId(rs.getString(1))
-                        .setMessage(createMessage(payload, clazz, destinationName, destinationType, headers, clientId))
-                        .setCreated(rs.getTimestamp(6).toInstant())
-                        .setNextSend(rs.getTimestamp(7).toInstant())
-                        .setClazz(clazz)
-                        .setStatus(rs.getString(9))
-                        ;
-            } catch (ClassNotFoundException e) {
-                throw new IllegalStateException("Unable to find class " + clazz, e);
-            } catch (JsonProcessingException e) {
-                throw new IllegalStateException("Unable to deserialize payload or headers", e);
-            }
+
+            return new PersistedMessage()
+                    .setId(rs.getString(1))
+                    .setMessage(createMessage(payload, clazz, destinationName, destinationType, headers, clientId))
+                    .setCreated(rs.getTimestamp(6).toInstant())
+                    .setNextSend(rs.getTimestamp(7).toInstant())
+                    .setClazz(clazz)
+                    .setStatus(rs.getString(9))
+                    ;
+
         }
     }
 }

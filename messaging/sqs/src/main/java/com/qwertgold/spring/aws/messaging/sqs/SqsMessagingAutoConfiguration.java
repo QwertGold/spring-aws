@@ -1,5 +1,6 @@
 package com.qwertgold.spring.aws.messaging.sqs;
 
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sqs.defaults.DefaultSqsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sqs.defaults.DefaultSqsUrlResolver;
 import com.qwertgold.spring.aws.messaging.sqs.spi.SqsRequestBuilder;
@@ -15,8 +16,8 @@ public class SqsMessagingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SqsRequestBuilder.class)
-    public DefaultSqsRequestBuilder defaultSqsRequestBuilder(SqsUrlResolver sqsUrlResolver) {
-        return new DefaultSqsRequestBuilder(sqsUrlResolver);
+    public DefaultSqsRequestBuilder defaultSqsRequestBuilder(SqsUrlResolver sqsUrlResolver, JsonConverter jsonConverter) {
+        return new DefaultSqsRequestBuilder(sqsUrlResolver, jsonConverter);
     }
 
     @Bean

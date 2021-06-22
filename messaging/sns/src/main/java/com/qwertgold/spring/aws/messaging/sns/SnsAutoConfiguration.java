@@ -1,5 +1,6 @@
 package com.qwertgold.spring.aws.messaging.sns;
 
+import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sns.defaults.DefaultSnsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sns.defaults.DefaultTopicArnResolver;
 import com.qwertgold.spring.aws.messaging.sns.spi.SnsRequestBuilder;
@@ -20,8 +21,8 @@ public class SnsAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(SnsRequestBuilder.class)
-    public DefaultSnsRequestBuilder defaultSnsRequestBuilder(TopicArnResolver topicArnResolver) {
-        return new DefaultSnsRequestBuilder(topicArnResolver);
+    public DefaultSnsRequestBuilder defaultSnsRequestBuilder(TopicArnResolver topicArnResolver, JsonConverter jsonConverter) {
+        return new DefaultSnsRequestBuilder(topicArnResolver, jsonConverter);
     }
 
     @Bean
