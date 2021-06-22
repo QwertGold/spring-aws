@@ -27,7 +27,7 @@ public class SqsMessagingAutoConfiguration {
 
 
     @Bean
-    public SqsMessageSinkFactory sqsMessageSinkFactory(SqsRequestBuilder sqsRequestBuilder, ObjectProvider<SqsClient> sqsClientObjectProvider) {
-        return new SqsMessageSinkFactory(sqsRequestBuilder, sqsClientObjectProvider);
+    public SqsMessageRouterFactory sqsMessageRouterFactory(SqsRequestBuilder sqsRequestBuilder, ObjectProvider<SqsClient> sqsClientObjectProvider) {
+        return new SqsMessageRouterFactory(sqsRequestBuilder, sqsClientObjectProvider);
     }
 }

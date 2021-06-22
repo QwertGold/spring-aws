@@ -19,12 +19,12 @@ import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
-import static com.qwertgold.spring.aws.messaging.sqs.SqsMessageSinkFactory.SQS_DESTINATION;
+import static com.qwertgold.spring.aws.messaging.sqs.SqsMessageRouterFactory.SQS_DESTINATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = TestApplication.class)
-public class SqsMessageSinkTest {
+public class SqsMessageRouterTest {
 
     @Autowired
     protected EventPublisherFactory eventPublisherFactory;

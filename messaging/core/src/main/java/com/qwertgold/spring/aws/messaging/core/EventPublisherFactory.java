@@ -2,40 +2,40 @@ package com.qwertgold.spring.aws.messaging.core;
 
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
 import com.qwertgold.spring.aws.messaging.core.spi.HeaderExtractor;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSink;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSinkFactory;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouter;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouterFactory;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Factory for constructing MessageSinks for a given destination type.
+ * Factory for constructing MessageRouter for a given destination type.
  */
 @RequiredArgsConstructor
 public class EventPublisherFactory {
 
-    private final MessageSinkFactoryManager messageSinkFactoryManager;
+    private final MessageRouterFactoryManager messageRouterFactoryManager;
     @Getter
     private final HeaderExtractor headerExtractor;
-    private final ConcurrentHashMap<Destination, MessageSink> sinks = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Destination, MessageRouter> routers = new ConcurrentHashMap<>();
 
     public EventPublisher createPublisher(Destination destination) {
-        MessageSink messageSink = getOrCreateSink(destination);
-        return new EventPublisher(messageSink, destination, headerExtractor);
+        MessageRouter messageRouter = getOrCreateRouter(destination);
+        return new EventPublisher(messageRouter, destination, headerExtractor);
     }
 
     /**
-     * should not be called by application code. This is intended for abstractions which which to decorate the MessageSink
+     * should not be called by application code. This is intended for framework code which needs access to the MessageRouter, for instance to
+     * perform decoration
      */
-    public MessageSink getOrCreateSink(Destination key) {
-        return sinks.computeIfAbsent(key, this::createSinkForDestination);
+    public MessageRouter getOrCreateRouter(Destination key) {
+        return routers.computeIfAbsent(key, this::createRouterForDestination);
     }
 
-    private MessageSink createSinkForDestination(Destination destination) {
-        MessageSinkFactory messageSinkFactory = messageSinkFactoryManager.getFactoryForDestinationType(destination.getDestinationType());
-        return messageSinkFactory.createSink(destination);
+    private MessageRouter createRouterForDestination(Destination destination) {
+        MessageRouterFactory messageRouterFactory = messageRouterFactoryManager.getFactoryForDestinationType(destination.getDestinationType());
+        return messageRouterFactory.createRouter(destination);
     }
 
 

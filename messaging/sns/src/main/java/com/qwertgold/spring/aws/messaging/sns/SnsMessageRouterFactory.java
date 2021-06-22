@@ -2,8 +2,8 @@ package com.qwertgold.spring.aws.messaging.sns;
 
 import com.google.common.base.Preconditions;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSink;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSinkFactory;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouter;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouterFactory;
 import com.qwertgold.spring.aws.messaging.sns.spi.SnsRequestBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public class SnsMessageSinkFactory implements MessageSinkFactory {
+public class SnsMessageRouterFactory implements MessageRouterFactory {
 
     public static final String SNS_DESTINATION = "SNS";
 
@@ -33,7 +33,7 @@ public class SnsMessageSinkFactory implements MessageSinkFactory {
     }
 
     @Override
-    public MessageSink createSink(Destination destination) {
-        return new SnsMessageSink(snsClient, snsRequestBuilder);
+    public MessageRouter createRouter(Destination destination) {
+        return new SnsMessageRouter(snsClient, snsRequestBuilder);
     }
 }

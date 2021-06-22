@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 public class TestAutoConfiguration {
 
     @Bean
-    public TestMessageSinkFactory testMessageSinkFactory() {
-        return new TestMessageSinkFactory();
+    public TestMessageRouterFactory testMessageRouterFactory() {
+        return new TestMessageRouterFactory();
     }
 }

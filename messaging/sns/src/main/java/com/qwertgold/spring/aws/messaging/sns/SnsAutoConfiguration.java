@@ -25,8 +25,8 @@ public class SnsAutoConfiguration {
     }
 
     @Bean
-    public SnsMessageSinkFactory snsMessageSinkFactory(SnsRequestBuilder snsRequestBuilder, ObjectProvider<SnsClient> snsClientProvider) {
-        return new SnsMessageSinkFactory(snsRequestBuilder, snsClientProvider);
+    public SnsMessageRouterFactory snsMessageRouterFactory(SnsRequestBuilder snsRequestBuilder, ObjectProvider<SnsClient> snsClientProvider) {
+        return new SnsMessageRouterFactory(snsRequestBuilder, snsClientProvider);
     }
 
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * If the PersistentMessageSink is unable to deliver the message to the real destination, we need to retry.
+ * If the PersistentMessageRouter is unable to deliver the message to the real destination, we need to retry.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -66,8 +66,8 @@ public class UndeliveredMessageReSender {
                 for (PersistedMessage unsentMessage : unsentMessages) {
                     try {
                         Destination destination = unsentMessage.getMessage().getDestination();
-                        PersistentMessageSink messageSink = persistenceEventPublisherFactory.doCreate(destination);
-                        messageSink.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId());
+                        PersistentMessageRouter messageRouter = persistenceEventPublisherFactory.doCreate(destination);
+                        messageRouter.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId());
                     } catch (Exception e) {
                         log.warn("Unable to re-send message");
                     }

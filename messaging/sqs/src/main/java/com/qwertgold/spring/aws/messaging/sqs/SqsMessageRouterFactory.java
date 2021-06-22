@@ -2,8 +2,8 @@ package com.qwertgold.spring.aws.messaging.sqs;
 
 import com.google.common.base.Preconditions;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSink;
-import com.qwertgold.spring.aws.messaging.core.spi.MessageSinkFactory;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouter;
+import com.qwertgold.spring.aws.messaging.core.spi.MessageRouterFactory;
 import com.qwertgold.spring.aws.messaging.sqs.spi.SqsRequestBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 
 @RequiredArgsConstructor
-public class SqsMessageSinkFactory implements MessageSinkFactory {
+public class SqsMessageRouterFactory implements MessageRouterFactory {
     public static final String SQS_DESTINATION = "SQS";
 
     private final SqsRequestBuilder sqsRequestBuilder;
@@ -33,7 +33,7 @@ public class SqsMessageSinkFactory implements MessageSinkFactory {
     }
 
     @Override
-    public MessageSink createSink(Destination destination) {
-        return new SqsMessageSink(sqsClient, sqsRequestBuilder);
+    public MessageRouter createRouter(Destination destination) {
+        return new SqsMessageRouter(sqsClient, sqsRequestBuilder);
     }
 }

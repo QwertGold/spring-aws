@@ -1,6 +1,6 @@
 package com.qwertgold.spring.aws.messaging.persistence;
 
-import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageSinkFactory;
+import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageRouterFactory;
 import com.qwertgold.spring.aws.messaging.persistence.beans.TestUndeliveredMessageLifecycleManager;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,8 +19,8 @@ public class TestApplication {
     }
 
     @Bean
-    public ExceptionThrowingMessageSinkFactory exceptionThrowingMessageSinkFactory() {
-        return new ExceptionThrowingMessageSinkFactory();
+    public ExceptionThrowingMessageRouterFactory exceptionThrowingMessageRouterFactory() {
+        return new ExceptionThrowingMessageRouterFactory();
     }
 
 }

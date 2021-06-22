@@ -4,8 +4,8 @@ import com.qwertgold.spring.aws.messaging.Helper;
 import com.qwertgold.spring.aws.messaging.TestPayloadDto;
 import com.qwertgold.spring.aws.messaging.core.EventPublisher;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
-import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageSink;
-import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageSinkFactory;
+import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageRouter;
+import com.qwertgold.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageRouterFactory;
 import com.qwertgold.spring.aws.messaging.persistence.beans.TestUndeliveredMessageLifecycleManager;
 import com.qwertgold.spring.aws.messaging.persistence.dao.PersistedMessage;
 import org.awaitility.Awaitility;
@@ -33,7 +33,7 @@ public class UndeliveredMessageReSenderTest extends PersistenceTestCase {
     private TestUndeliveredMessageLifecycleManager lifecycleManager;
 
     @Autowired
-    private ExceptionThrowingMessageSinkFactory exceptionThrowingMessageSinkFactory;
+    private ExceptionThrowingMessageRouterFactory exceptionThrowingMessageRouterFactory;
 
     @Autowired
     private PersistenceConfiguration configuration;
@@ -52,10 +52,10 @@ public class UndeliveredMessageReSenderTest extends PersistenceTestCase {
     @Test
     public void given_exception_is_thrown_message_is_stored_and_unsent() {
 
-        ExceptionThrowingMessageSink messageSink = exceptionThrowingMessageSinkFactory.getMessageSink();
-        EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", ExceptionThrowingMessageSinkFactory.RETRY_DESTINATION_TYPE));
+        ExceptionThrowingMessageRouter messageRouter = exceptionThrowingMessageRouterFactory.getMessageRouter();
+        EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", ExceptionThrowingMessageRouterFactory.RETRY_DESTINATION_TYPE));
 
-        messageSink.setExceptionOnNextRequest(true);    // next request throws exception when sending
+        messageRouter.setExceptionOnNextRequest(true);    // next request throws exception when sending
         TestPayloadDto payload = Helper.createPayload();
 
         transactionTemplate.executeWithoutResult(status -> {
@@ -76,7 +76,7 @@ public class UndeliveredMessageReSenderTest extends PersistenceTestCase {
             }
         });
 
-        assertThat(messageSink.getMessages()).as("Message should be resend to sink").hasSize(1);
+        assertThat(messageRouter.getMessages()).as("Message should be resend to router").hasSize(1);
     }
 
 }
