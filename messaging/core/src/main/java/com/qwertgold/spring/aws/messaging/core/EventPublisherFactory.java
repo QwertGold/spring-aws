@@ -4,37 +4,31 @@ import com.qwertgold.spring.aws.messaging.core.domain.Destination;
 import com.qwertgold.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.qwertgold.spring.aws.messaging.core.spi.MessageSink;
 import com.qwertgold.spring.aws.messaging.core.spi.MessageSinkFactory;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Factory for constructing MessageSinks. Uses a builder pattern with a callback to the factory when build
+ * Factory for constructing MessageSinks for a given destination type.
  */
-@Component
 @RequiredArgsConstructor
 public class EventPublisherFactory {
 
     private final MessageSinkFactoryManager messageSinkFactoryManager;
+    @Getter
     private final HeaderExtractor headerExtractor;
     private final ConcurrentHashMap<Destination, MessageSink> sinks = new ConcurrentHashMap<>();
 
-    public EventPublisherBuilder builder() {
-        return new EventPublisherBuilder(this);
-    }
-
-    protected EventPublisher build(EventPublisherBuilder builder) {
-        MessageSink messageSink = getOrCreateSink(builder.getDestination());
-        return createEventPublisher(messageSink, builder.getDestination());
-    }
-
-    @NotNull
-    public EventPublisher createEventPublisher(MessageSink messageSink, Destination destination) {
+    public EventPublisher createPublisher(Destination destination) {
+        MessageSink messageSink = getOrCreateSink(destination);
         return new EventPublisher(messageSink, destination, headerExtractor);
     }
 
+    /**
+     * should not be called by application code. This is intended for abstractions which which to decorate the MessageSink
+     */
     public MessageSink getOrCreateSink(Destination key) {
         return sinks.computeIfAbsent(key, this::createSinkForDestination);
     }

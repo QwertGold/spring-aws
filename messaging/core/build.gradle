@@ -1,4 +1,10 @@
 dependencies {
     implementation("org.apache.commons:commons-text")
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation project(':messaging:test-helper')
+    testImplementation project(':messaging:test')
+    testImplementation("junit:junit:4.13.1")
+
 }

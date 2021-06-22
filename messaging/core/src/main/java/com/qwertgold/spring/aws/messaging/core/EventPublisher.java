@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * A publisher for a given destination.
- * Each instance of this class handles a single destination, unlike the MessageSing which handles all destinations for a given destination type
+ * Each instance of this class handles a single destination, unlike the MessageSink which handles all destinations for a given destination type
  */
 @RequiredArgsConstructor
 public class EventPublisher {

@@ -1,4 +1,4 @@
-package com.qwertgold.spring.aws.messaging.test;
+package com.qwertgold.spring.aws.messaging.persistence.beans;
 
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
 import com.qwertgold.spring.aws.messaging.core.spi.MessageSink;
@@ -7,15 +7,15 @@ import lombok.Getter;
 
 import java.util.Set;
 
-public class TestMessageSinkFactory implements MessageSinkFactory {
+public class ExceptionThrowingMessageSinkFactory implements MessageSinkFactory {
 
-    public static final String MOCK_DESTINATION_TYPE = "MOCK";
+    public static final String RETRY_DESTINATION_TYPE = "RETRY";
     @Getter
-    private final TestMessageSink messageSink = new TestMessageSink();
+    private final ExceptionThrowingMessageSink messageSink = new ExceptionThrowingMessageSink();
 
     @Override
     public Set<String> supportedDestinations() {
-        return Set.of(MOCK_DESTINATION_TYPE);
+        return Set.of(RETRY_DESTINATION_TYPE);
     }
 
     @Override

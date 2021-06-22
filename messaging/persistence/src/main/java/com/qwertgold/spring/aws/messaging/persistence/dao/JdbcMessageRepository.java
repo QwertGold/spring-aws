@@ -78,15 +78,16 @@ public class JdbcMessageRepository implements MessageRepository {
 
     @Override
     public List<PersistedMessage> findUnsentMessages(int maxResults) {
-        // todo add limit
-        return jdbcTemplate.query("select * from message where status = ?", new PersistedMessageRowMapper(), UNSENT);
+        return jdbcTemplate.query("select * from message where status = ? order by created_at",
+                new ArgumentPreparedStatementSetterWithLimit(maxResults, JdbcMessageRepository.UNSENT),
+                new PersistedMessageRowMapper());
     }
 
 
     @TestOnly
     public List<PersistedMessage> findAllMessages(int maxResults) {
-        // todo add limit
-        return jdbcTemplate.query("select * from message", new PersistedMessageRowMapper());
+        return jdbcTemplate.query("select * from message order by created_at", new ArgumentPreparedStatementSetterWithLimit(maxResults),
+                new PersistedMessageRowMapper());
     }
 
     private Message createMessage(String payloadJson, String clazz, String destinationName, String destinationType, String headers, String clientId) throws ClassNotFoundException, JsonProcessingException {

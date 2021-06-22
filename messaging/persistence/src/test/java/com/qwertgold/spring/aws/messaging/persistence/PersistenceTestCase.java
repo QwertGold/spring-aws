@@ -22,7 +22,7 @@ public abstract class PersistenceTestCase {
     protected TestMessageSinkFactory testMessageSinkFactory;
 
     @Before
-    public void before() {
+    public final void cleanDatabase() {
         jdbcMessageRepository.deleteAll();
     }
 

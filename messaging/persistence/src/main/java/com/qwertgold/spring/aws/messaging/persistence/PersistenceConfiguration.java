@@ -7,7 +7,8 @@ import java.time.Duration;
 
 @Data
 @ConfigurationProperties(prefix = "messaging.persistence")
-public class UndeliveredMessageReSenderConfiguration {
+public class PersistenceConfiguration {
     private Duration retryInterval = Duration.ofSeconds(5);
     private Duration nextSend = Duration.ofSeconds(5);
+    private int dispatchThreads = 1;
 }

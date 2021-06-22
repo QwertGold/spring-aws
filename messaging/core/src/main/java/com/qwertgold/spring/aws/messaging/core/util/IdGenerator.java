@@ -8,7 +8,7 @@ import org.apache.commons.text.RandomStringGenerator;
 import java.security.SecureRandom;
 
 /**
- * UUIDs have dashes, which can be annoying to copy
+ * UUIDs have dashes, which can be annoying to copy, this generate random ID with high entropy (11 orders of magnitude higher than UUID)
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class IdGenerator {

@@ -16,3 +16,4 @@ create table message
     collate utf8mb4_unicode_ci
 ;
 create index idx_message__next_send on message (next_send);
+create index idx_message__created_at on message (status, created_at);

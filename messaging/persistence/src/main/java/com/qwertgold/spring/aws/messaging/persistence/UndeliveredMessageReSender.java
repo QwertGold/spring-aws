@@ -1,11 +1,13 @@
 package com.qwertgold.spring.aws.messaging.persistence;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.qwertgold.spring.aws.messaging.core.domain.Destination;
 import com.qwertgold.spring.aws.messaging.persistence.dao.PersistedMessage;
 import com.qwertgold.spring.aws.messaging.persistence.spi.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.Lifecycle;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -17,23 +19,30 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class UndeliveredMessageReSender implements Lifecycle {
+public class UndeliveredMessageReSender {
 
     private final MessageRepository messageRepository;
-    private final PersistentMessageSink persistentMessageSink;
-    private final UndeliveredMessageReSenderConfiguration configuration;
+    private final PersistenceEventPublisherFactory persistenceEventPublisherFactory;
+    private final PersistenceConfiguration configuration;
+    private final TransactionTemplate transactionTemplate;
     private ScheduledExecutorService executorService;
 
-    @Override
     public void start() {
-        // todo find a way to express leader selection
-        executorService = Executors.newScheduledThreadPool(1);
+        log.info("Starting");
+        executorService = Executors.newScheduledThreadPool(1,
+                new ThreadFactoryBuilder().setNameFormat("UndeliveredMessageReSender")
+                        .setUncaughtExceptionHandler((t, e) -> log.error("Uncaught exception", e))
+                        .build());
+
         executorService.schedule(() -> resend(), configuration.getRetryInterval().toSeconds(), TimeUnit.SECONDS);
     }
 
-    @Override
     @SneakyThrows(InterruptedException.class)
     public void stop() {
+        if (executorService == null) {
+            return;
+        }
+        log.info("Stopping");
         try {
             executorService.shutdown();
             boolean success = executorService.awaitTermination(10, TimeUnit.SECONDS);
@@ -46,21 +55,24 @@ public class UndeliveredMessageReSender implements Lifecycle {
         }
     }
 
-    @Override
     public boolean isRunning() {
         return executorService != null;
     }
 
     protected void resend() {
         try {
-            List<PersistedMessage> unsentMessages = messageRepository.findUnsentMessages(100);
-            for (PersistedMessage unsentMessage : unsentMessages) {
-                try {
-                    persistentMessageSink.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId());
-                } catch (Exception e) {
-                    log.warn("Unable to re-send message");
+            transactionTemplate.executeWithoutResult(status -> {
+                List<PersistedMessage> unsentMessages = messageRepository.findUnsentMessages(100);
+                for (PersistedMessage unsentMessage : unsentMessages) {
+                    try {
+                        Destination destination = unsentMessage.getMessage().getDestination();
+                        PersistentMessageSink messageSink = persistenceEventPublisherFactory.doCreate(destination);
+                        messageSink.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId());
+                    } catch (Exception e) {
+                        log.warn("Unable to re-send message");
+                    }
                 }
-            }
+            });
         } catch (Exception e) {
             log.error("Error unable to find messages to resend");
         }

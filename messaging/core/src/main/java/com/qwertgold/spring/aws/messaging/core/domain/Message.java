@@ -10,6 +10,10 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Message {
+    /**
+     * A client identifier, which is stored if the message is persisted. This allows you to find specific messages and link then to entities in the
+     * business domain
+     */
     String clientId;
     Object payload;
     Destination destination;

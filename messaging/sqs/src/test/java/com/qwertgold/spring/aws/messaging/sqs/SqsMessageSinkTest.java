@@ -46,9 +46,7 @@ public class SqsMessageSinkTest {
     @Test
     public void given_message_is_received_it_is_readable_from_localstack() throws Exception {
 
-        EventPublisher publisher = eventPublisherFactory.builder()
-                .withDestination(new Destination(Helper.DESTINATION, SQS_DESTINATION))
-                .build();
+        EventPublisher publisher = eventPublisherFactory.createPublisher(new Destination(Helper.DESTINATION, SQS_DESTINATION));
 
         TestPayloadDto payload = Helper.createPayload();
         publisher.send(payload);

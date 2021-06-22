@@ -1,5 +1,6 @@
 package com.qwertgold.spring.aws.messaging.core;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.qwertgold.spring.aws.messaging.core.spi.MessageSinkFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -15,17 +16,21 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MessageSinkFactoryManager {
 
+    public static final String NO_SINKS = "No registered SinkFactories, you need at least one auto configured MessageSinkFactory to use this api.";
+    public static final String MULTIPLE_FACTORIES_FORMAT = "Multiple factories registered for destination '%s': %s";
+    public static final String UNSUPPORTED_DESTINATION_TYPE = "Unable to find a message sink for destination type: '%s'";
     private final List<MessageSinkFactory> sinkFactories;
     private final Map<String, MessageSinkFactory> sinkFactoryMap = new ConcurrentHashMap<>();
 
     public MessageSinkFactory getFactoryForDestinationType(String destinationType) {
         MessageSinkFactory messageSinkFactory = sinkFactoryMap.get(destinationType);
         if (messageSinkFactory == null) {
-            throw new IllegalStateException("Unable to find a message sink for destination type " + destinationType);
+            throw new IllegalStateException(String.format(UNSUPPORTED_DESTINATION_TYPE, destinationType));
         }
         return messageSinkFactory;
     }
 
+    @VisibleForTesting
     @PostConstruct
     public void createFactoryMap() {
         for (MessageSinkFactory sinkFactory : sinkFactories) {
@@ -34,14 +39,14 @@ public class MessageSinkFactoryManager {
                 if (sinkFactoryMap.containsKey(destination)) {
                     MessageSinkFactory factory = sinkFactoryMap.get(destination);
                     List<MessageSinkFactory> list = List.of(factory, sinkFactory);
-                    throw new IllegalStateException("Multiple factories registered for destination " + destination + ": " + list);
+                    throw new IllegalStateException(String.format(MULTIPLE_FACTORIES_FORMAT, destination, list));
                 }
                 sinkFactoryMap.put(destination, sinkFactory);
             }
         }
 
         if (sinkFactoryMap.isEmpty()) {
-            throw new IllegalStateException("No registered SinkFactories, you need at least one auto configured MessageSinkFactory to use this api.");
+            throw new IllegalStateException(NO_SINKS);
         }
     }
 }
