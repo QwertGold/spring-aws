@@ -23,7 +23,7 @@ public class DefaultSqsRequestBuilder implements SqsRequestBuilder {
 
         SendMessageRequest.Builder builder = SendMessageRequest.builder();
         builder.queueUrl(urlResolver.getQueueUrl(message.getDestination().getDestination()));
-        builder.messageBody(json(message.getPayload()));
+        builder.messageBody(jsonConverter.toJson(message.getPayload()));
         encodeHeaders(builder, message);
         return builder.build();
     }
@@ -41,9 +41,5 @@ public class DefaultSqsRequestBuilder implements SqsRequestBuilder {
                 .dataType(e.getValue().getType())
                 .stringValue(e.getValue().getValue())
                 .build();
-    }
-
-    private String json(Object payload)  {
-        return jsonConverter.toJson(payload);
     }
 }

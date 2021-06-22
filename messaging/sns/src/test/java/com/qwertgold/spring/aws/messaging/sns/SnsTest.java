@@ -1,4 +1,4 @@
-package com.qwertgold.spring.aws.messaging.sqs;
+package com.qwertgold.spring.aws.messaging.sns;
 
 import com.qwertgold.spring.aws.messaging.Helper;
 import com.qwertgold.spring.aws.messaging.TestPayloadDto;
@@ -6,72 +6,81 @@ import com.qwertgold.spring.aws.messaging.core.EventPublisher;
 import com.qwertgold.spring.aws.messaging.core.EventPublisherFactory;
 import com.qwertgold.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.qwertgold.spring.aws.messaging.core.domain.Destination;
-import com.qwertgold.spring.aws.messaging.core.domain.Header;
 import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
-import com.qwertgold.spring.aws.messaging.sqs.defaults.DefaultSqsRequestBuilder;
-import com.qwertgold.spring.aws.messaging.sqs.spi.SqsUrlResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.CreateQueueRequest;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
-import static com.qwertgold.spring.aws.messaging.sqs.SqsMessageRouterFactory.SQS_DESTINATION;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = TestApplication.class)
-public class SqsMessageRouterTest {
+public class SnsTest {
 
     @Autowired
     protected EventPublisherFactory eventPublisherFactory;
 
     @Autowired
+    private SnsClient snsClient;
+
+    @Autowired
     private SqsClient sqsClient;
 
     @Autowired
-    private SqsUrlResolver urlResolver;
-
+    private TestTopicArnResolver testTopicArnResolver;
 
     @Autowired
     private JsonConverter jsonConverter;
+    private String queueUrl;
 
     @Before
-    public void createQueue() {
-        sqsClient.createQueue(CreateQueueRequest.builder().queueName(Helper.DESTINATION).build());
+    public void setupTopic() {
+
+        String topicArn = snsClient.createTopic(CreateTopicRequest.builder().name("test-topic").build()).topicArn();
+        queueUrl = sqsClient.createQueue(CreateQueueRequest.builder().queueName("test-queue").build()).queueUrl();
+        snsClient.subscribe(builder -> builder.topicArn(topicArn).endpoint(queueUrl).protocol("sqs").attributes(Map.of("RawMessageDelivery", "true")));
+        testTopicArnResolver.setTopicArn(topicArn);
     }
 
     @Test
-    public void given_message_is_received_it_is_readable_from_localstack() {
+    public void given_message_is_published_it_is_sent_to_sns() {
 
-        EventPublisher publisher = eventPublisherFactory.createPublisher(new Destination(Helper.DESTINATION, SQS_DESTINATION));
+        EventPublisher publisher = eventPublisherFactory.createPublisher(new Destination(Helper.DESTINATION, SnsMessageRouterFactory.SNS_DESTINATION));
 
         TestPayloadDto payload = Helper.createPayload();
         publisher.send(payload);
 
-
-        String queueUrl = urlResolver.getQueueUrl(Helper.DESTINATION);
         ReceiveMessageResponse response = sqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(queueUrl)
-                        .messageAttributeNames(DefaultHeaderExtractor.CLASS_HEADER_NAME, DefaultHeaderExtractor.EVENT_HEADER_NAME).build());
+                .messageAttributeNames(DefaultHeaderExtractor.CLASS_HEADER_NAME, DefaultHeaderExtractor.EVENT_HEADER_NAME).build());
 
         assertThat(response.messages()).hasSize(1);
         software.amazon.awssdk.services.sqs.model.Message awsMessage = response.messages().get(0);
+
+        String body = awsMessage.body();
+        assertThat(body).isEqualTo(jsonConverter.toJson(payload));
 
         assertThat(awsMessage.messageAttributes()).hasSize(2);
         assertThat(awsMessage.messageAttributes().get(DefaultHeaderExtractor.CLASS_HEADER_NAME).stringValue()).isEqualTo(payload.getClass().getName());
         assertThat(awsMessage.messageAttributes().get(DefaultHeaderExtractor.EVENT_HEADER_NAME).stringValue()).isEqualTo(payload.getClass().getSimpleName());
 
-        String body = awsMessage.body();
-        assertThat(body).isEqualTo(jsonConverter.toJson(payload));
 
         String receiptHandle = awsMessage.receiptHandle();
         sqsClient.deleteMessage(DeleteMessageRequest.builder().queueUrl(queueUrl).receiptHandle(receiptHandle).build());
+
+
+
+
     }
 }

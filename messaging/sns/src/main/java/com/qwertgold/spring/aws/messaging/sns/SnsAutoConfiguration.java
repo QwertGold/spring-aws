@@ -2,7 +2,6 @@ package com.qwertgold.spring.aws.messaging.sns;
 
 import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sns.defaults.DefaultSnsRequestBuilder;
-import com.qwertgold.spring.aws.messaging.sns.defaults.DefaultTopicArnResolver;
 import com.qwertgold.spring.aws.messaging.sns.spi.SnsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sns.spi.TopicArnResolver;
 import org.springframework.beans.factory.ObjectProvider;
@@ -15,19 +14,13 @@ import software.amazon.awssdk.services.sns.SnsClient;
 public class SnsAutoConfiguration {
 
     @Bean
-    public DefaultTopicArnResolver defaultTopicArnResolver() {
-        return new DefaultTopicArnResolver();
-    }
-
-    @Bean
     @ConditionalOnMissingBean(SnsRequestBuilder.class)
-    public DefaultSnsRequestBuilder defaultSnsRequestBuilder(TopicArnResolver topicArnResolver, JsonConverter jsonConverter) {
-        return new DefaultSnsRequestBuilder(topicArnResolver, jsonConverter);
+    public DefaultSnsRequestBuilder defaultSnsRequestBuilder(ObjectProvider<TopicArnResolver> topicArnResolverProvider, JsonConverter jsonConverter) {
+        return new DefaultSnsRequestBuilder(topicArnResolverProvider, jsonConverter);
     }
 
     @Bean
     public SnsMessageRouterFactory snsMessageRouterFactory(SnsRequestBuilder snsRequestBuilder, ObjectProvider<SnsClient> snsClientProvider) {
         return new SnsMessageRouterFactory(snsRequestBuilder, snsClientProvider);
     }
-
 }

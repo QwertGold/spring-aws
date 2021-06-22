@@ -1,31 +1,39 @@
 package com.qwertgold.spring.aws.messaging.sns.defaults;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.qwertgold.spring.aws.messaging.core.domain.Header;
 import com.qwertgold.spring.aws.messaging.core.domain.Message;
 import com.qwertgold.spring.aws.messaging.core.spi.JsonConverter;
 import com.qwertgold.spring.aws.messaging.sns.spi.SnsRequestBuilder;
 import com.qwertgold.spring.aws.messaging.sns.spi.TopicArnResolver;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 
+import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class DefaultSnsRequestBuilder implements SnsRequestBuilder {
 
-    private final TopicArnResolver topicArnResolver;
+    private final ObjectProvider<TopicArnResolver> topicArnResolverProvider;
     private final JsonConverter jsonMapper;
+    private TopicArnResolver topicArnResolver;
+
+    @PostConstruct
+    public void checkDependencies() {
+        topicArnResolver = topicArnResolverProvider.getIfAvailable();
+        Preconditions.checkNotNull(topicArnResolver, "Missing dependency TopicArnResolver. You need to define an instance of TopicArnResolver to use SNS framework.");
+    }
 
     @Override
     public PublishRequest build(Message message) {
 
         PublishRequest.Builder builder = PublishRequest.builder()
                 .topicArn(topicArnResolver.resolveDestination(message.getDestination().getDestination()))
-                .message(json(message));
+                .message(jsonMapper.toJson(message.getPayload()));
         encodeHeaders(builder, message);
         return builder.build();
     }
@@ -45,7 +53,4 @@ public class DefaultSnsRequestBuilder implements SnsRequestBuilder {
                 .build();
     }
 
-    private String json(Message message) {
-        return jsonMapper.toJson(message);
-    }
 }
