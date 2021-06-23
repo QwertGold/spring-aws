@@ -1,0 +1,1 @@
+This is a wrapper around AWS apis to allow you to integrate with them in a more spring-like fashion 

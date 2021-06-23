@@ -1,2 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.qwertgold.spring.aws.messaging.sqs.SqsMessagingAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.hellopublic.spring.aws.messaging.sqs.SqsMessagingAutoConfiguration
 
