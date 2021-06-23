@@ -1,6 +1,7 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
+import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
@@ -53,7 +54,7 @@ public class PersistenceAutoConfiguration {
 
     @Bean
     public PersistenceEventPublisherFactory persistenceMessageFactory(EventPublisherFactory eventPublisherFactory, MessageRepository messageRepository,
-                                                                      Dispatcher dispatcher) {
-        return new PersistenceEventPublisherFactory(eventPublisherFactory, messageRepository, dispatcher);
+                                                                      Dispatcher dispatcher, HeaderExtractor headerExtractor) {
+        return new PersistenceEventPublisherFactory(eventPublisherFactory, messageRepository, dispatcher, headerExtractor);
     }
 }

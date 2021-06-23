@@ -35,12 +35,13 @@ public class PersistentMessageRouterTest extends PersistenceTestCase {
     @Test
     public void given_message_is_received_it_is_stored_and_forwarded_to_decorated_router() {
 
-        EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", TestMessageRouterFactory.MOCK_DESTINATION_TYPE));
+        Destination dummyDestination = new Destination("dummy", "any-destination");
+        EventPublisher publisher = messageFactory.createPublisher(dummyDestination);
         TestPayloadDto payload = Helper.createPayload();
 
         transactionTemplate.executeWithoutResult(status -> publisher.send(payload));
 
-        TestMessageRouter testMessageRouter = testMessageRouterFactory.getMessageRouter();
+        TestMessageRouter testMessageRouter = testEventPublisherFactory.getTestMessageRouter();
         // delivery is async
         Awaitility.await().atMost(10 , TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(testMessageRouter.getMessages()).hasSize(1));
@@ -51,6 +52,7 @@ public class PersistentMessageRouterTest extends PersistenceTestCase {
         List<PersistedMessage> allMessages = jdbcMessageRepository.findAllMessages(10);
         assertThat(allMessages).hasSize(1);
         PersistedMessage persistedMessage = allMessages.get(0);
+        assertThat(persistedMessage.getMessage().getDestination()).isEqualTo(dummyDestination);
         assertThat(persistedMessage.getStatus()).isEqualTo(JdbcMessageRepository.SENT);
     }
 

@@ -8,6 +8,7 @@ import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
@@ -27,11 +28,13 @@ public class MessagingAutoConfiguration {
     }
 
     @Bean
+    @Lazy   // lazy, so we create a different factory during tests
     public EventPublisherFactory messagingFactory(MessageRouterFactoryManager messageRouterFactoryManager, HeaderExtractor headerExtractor) {
-        return new EventPublisherFactory(messageRouterFactoryManager, headerExtractor);
+        return new EventPublisherFactoryImpl(messageRouterFactoryManager, headerExtractor);
     }
 
     @Bean
+    @Lazy  // lazy, since it is a dependency on another lazy bean, and we don't need this when the test module is included
     public MessageRouterFactoryManager messageRouterFactoryManager(List<MessageRouterFactory> factories) {
         return new MessageRouterFactoryManager(factories);
     }

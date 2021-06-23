@@ -1,4 +1,5 @@
 dependencies {
     implementation project(':messaging:core')
     implementation("org.springframework.boot:spring-boot-autoconfigure")
+    implementation("junit:junit:4.13.1")
 }

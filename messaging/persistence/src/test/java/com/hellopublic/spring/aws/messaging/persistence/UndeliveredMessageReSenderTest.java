@@ -4,10 +4,9 @@ import com.hellopublic.spring.aws.messaging.Helper;
 import com.hellopublic.spring.aws.messaging.TestPayloadDto;
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageRouter;
-import com.hellopublic.spring.aws.messaging.persistence.beans.ExceptionThrowingMessageRouterFactory;
 import com.hellopublic.spring.aws.messaging.persistence.beans.TestUndeliveredMessageLifecycleManager;
 import com.hellopublic.spring.aws.messaging.persistence.dao.PersistedMessage;
+import com.hellopublic.spring.aws.messaging.test.TestMessageRouter;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.After;
@@ -33,9 +32,6 @@ public class UndeliveredMessageReSenderTest extends PersistenceTestCase {
     private TestUndeliveredMessageLifecycleManager lifecycleManager;
 
     @Autowired
-    private ExceptionThrowingMessageRouterFactory exceptionThrowingMessageRouterFactory;
-
-    @Autowired
     private PersistenceConfiguration configuration;
 
     @Before
@@ -52,8 +48,8 @@ public class UndeliveredMessageReSenderTest extends PersistenceTestCase {
     @Test
     public void given_exception_is_thrown_message_is_stored_and_unsent() {
 
-        ExceptionThrowingMessageRouter messageRouter = exceptionThrowingMessageRouterFactory.getMessageRouter();
-        EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", ExceptionThrowingMessageRouterFactory.RETRY_DESTINATION_TYPE));
+        TestMessageRouter messageRouter = testEventPublisherFactory.getTestMessageRouter();
+        EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", "any-destination"));
 
         messageRouter.setExceptionOnNextRequest(true);    // next request throws exception when sending
         TestPayloadDto payload = Helper.createPayload();

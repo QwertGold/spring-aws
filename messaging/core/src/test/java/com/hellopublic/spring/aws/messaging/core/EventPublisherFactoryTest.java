@@ -36,7 +36,7 @@ public class EventPublisherFactoryTest {
         List<MessageRouterFactory> factoryList = List.of(routerFactory);
         MessageRouterFactoryManager manager = new MessageRouterFactoryManager(factoryList);
         manager.createFactoryMap();
-        return new EventPublisherFactory(manager, new DefaultHeaderExtractor());
+        return new EventPublisherFactoryImpl(manager, new DefaultHeaderExtractor());
     }
 
 }

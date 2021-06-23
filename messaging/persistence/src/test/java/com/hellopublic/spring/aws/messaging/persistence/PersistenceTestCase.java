@@ -1,7 +1,7 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
-import com.hellopublic.spring.aws.messaging.test.TestMessageRouterFactory;
+import com.hellopublic.spring.aws.messaging.test.TestEventPublisherFactory;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,12 @@ public abstract class PersistenceTestCase {
     protected PersistenceEventPublisherFactory messageFactory;
 
     @Autowired
-    protected TestMessageRouterFactory testMessageRouterFactory;
+    protected TestEventPublisherFactory testEventPublisherFactory;
 
     @Before
     public final void cleanDatabase() {
         jdbcMessageRepository.deleteAll();
+        testEventPublisherFactory.getTestMessageRouter().clear();
     }
 
 }

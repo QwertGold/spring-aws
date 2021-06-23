@@ -3,6 +3,7 @@ package com.hellopublic.spring.aws.messaging.persistence;
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
+import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import com.hellopublic.spring.aws.messaging.persistence.spi.Dispatcher;
 import com.hellopublic.spring.aws.messaging.persistence.spi.MessageRepository;
@@ -23,11 +24,12 @@ public class PersistenceEventPublisherFactory {
     private final EventPublisherFactory eventPublisherFactory;
     private final MessageRepository messageRepository;
     private final Dispatcher dispatcher;
+    private final HeaderExtractor headerExtractor;
     private final ConcurrentHashMap<Destination, MessageRouter> routers = new ConcurrentHashMap<>();
 
     public EventPublisher createPublisher(Destination destination) {
         MessageRouter messageRouter = routers.computeIfAbsent(destination, this::doCreate);
-        return new EventPublisher(messageRouter, destination, eventPublisherFactory.getHeaderExtractor());
+        return new EventPublisher(messageRouter, destination, headerExtractor);
     }
 
     protected PersistentMessageRouter doCreate(Destination destination) {
