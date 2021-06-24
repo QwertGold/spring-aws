@@ -1,24 +1,28 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
+import com.hellopublic.spring.aws.messaging.persistence.customization.Dispatcher;
+import com.hellopublic.spring.aws.messaging.persistence.customization.MessageRepository;
+import com.hellopublic.spring.aws.messaging.persistence.customization.ResendCalculator;
+import com.hellopublic.spring.aws.messaging.persistence.customization.UndeliveredMessageLifecycleManager;
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultResendCalculator;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultUndeliveredMessageLifecycleManager;
-import com.hellopublic.spring.aws.messaging.persistence.spi.Dispatcher;
-import com.hellopublic.spring.aws.messaging.persistence.spi.MessageRepository;
-import com.hellopublic.spring.aws.messaging.persistence.spi.ResendCalculator;
-import com.hellopublic.spring.aws.messaging.persistence.spi.UndeliveredMessageLifecycleManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
+/**
+ * Auto Configuration for the messaging framework, if this dependency is included the beans defined here are automatically automatically picked up by Spring
+ * due to the entry in classpath:/META-INF/spring.factories
+ * All the beans with @ConditionalOnMissingBean are customizable, but have sensible defaults
+ */
 @Configuration
 @EnableConfigurationProperties(PersistenceConfiguration.class)
 public class PersistenceAutoConfiguration {

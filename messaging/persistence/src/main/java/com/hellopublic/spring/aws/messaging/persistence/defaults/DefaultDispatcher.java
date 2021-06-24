@@ -2,7 +2,7 @@ package com.hellopublic.spring.aws.messaging.persistence.defaults;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.hellopublic.spring.aws.messaging.persistence.PersistenceConfiguration;
-import com.hellopublic.spring.aws.messaging.persistence.spi.Dispatcher;
+import com.hellopublic.spring.aws.messaging.persistence.customization.Dispatcher;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,13 +12,16 @@ import org.springframework.context.SmartLifecycle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultDispatcher implements Dispatcher, SmartLifecycle {
 
     private final PersistenceConfiguration persistenceConfiguration;
+    private final AtomicInteger pendingTasks = new AtomicInteger();
     private ExecutorService executorService;
+
 
     @Override
     public void start() {
@@ -51,6 +54,18 @@ public class DefaultDispatcher implements Dispatcher, SmartLifecycle {
 
     @Override
     public void execute(@NotNull Runnable command) {
-        executorService.execute(command);
+        executorService.execute(() -> {
+            try {
+                pendingTasks.incrementAndGet();
+                command.run();
+            } finally {
+                pendingTasks.decrementAndGet();
+            }
+        });
+    }
+
+    @Override
+    public int getPendingTasks() {
+        return pendingTasks.get();
     }
 }

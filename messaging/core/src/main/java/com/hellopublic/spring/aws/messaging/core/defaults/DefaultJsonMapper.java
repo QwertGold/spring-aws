@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -31,14 +31,6 @@ public class DefaultJsonMapper implements JsonConverter {
         try {
             return objectMapper.writeValueAsString(x);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public <T> T fromJson(String json, Class<T> targetType) {
-        try {
-            return objectMapper.readValue(json, targetType);
-        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -4,10 +4,10 @@ import com.hellopublic.spring.aws.messaging.Helper;
 import com.hellopublic.spring.aws.messaging.TestPayloadDto;
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
-import com.hellopublic.spring.aws.messaging.sqs.spi.SqsUrlResolver;
+import com.hellopublic.spring.aws.messaging.sqs.customization.QueueUrlResolver;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,7 +34,7 @@ public class SqsMessageRouterTest {
     private SqsClient sqsClient;
 
     @Autowired
-    private SqsUrlResolver urlResolver;
+    private QueueUrlResolver urlResolver;
 
 
     @Autowired
@@ -51,7 +51,7 @@ public class SqsMessageRouterTest {
         EventPublisher publisher = eventPublisherFactory.createPublisher(new Destination(Helper.DESTINATION, SQS_DESTINATION));
 
         TestPayloadDto payload = Helper.createPayload();
-        publisher.send(payload);
+        publisher.publish(payload);
 
 
         String queueUrl = urlResolver.getQueueUrl(Helper.DESTINATION);

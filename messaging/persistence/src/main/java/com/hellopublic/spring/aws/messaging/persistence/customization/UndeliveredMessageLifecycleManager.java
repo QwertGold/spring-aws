@@ -1,7 +1,8 @@
-package com.hellopublic.spring.aws.messaging.persistence.spi;
+package com.hellopublic.spring.aws.messaging.persistence.customization;
 
 import com.hellopublic.spring.aws.messaging.persistence.UndeliveredMessageReSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.SmartLifecycle;
 
 /**
  * If we are running multiple instances of the same boot application, each instance would have it's own UndeliveredMessageReSender bean, so all instances
@@ -10,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  * We therefore have a simple abstraction to manage the lifecycle of the of the UndeliveredMessageReSender bean.
  */
 @RequiredArgsConstructor
-public abstract class UndeliveredMessageLifecycleManager {
+public abstract class UndeliveredMessageLifecycleManager implements SmartLifecycle {
 
     protected final UndeliveredMessageReSender undeliveredMessageReSender;
 

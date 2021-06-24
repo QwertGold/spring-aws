@@ -18,8 +18,14 @@ class ArgumentPreparedStatementSetterWithLimit extends ArgumentPreparedStatement
     }
 
     @Override
-    protected void doSetValue(PreparedStatement ps, int parameterPosition, Object argValue) throws SQLException {
+    public void setValues(PreparedStatement ps) throws SQLException {
         ps.setMaxRows(maxRows);
+        super.setValues(ps);
+    }
+
+    @Override
+    protected void doSetValue(PreparedStatement ps, int parameterPosition, Object argValue) throws SQLException {
+
         super.doSetValue(ps, parameterPosition, argValue);
     }
 }

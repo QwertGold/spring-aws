@@ -5,7 +5,7 @@ import com.hellopublic.spring.aws.messaging.TestPayloadDto;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import com.hellopublic.spring.aws.messaging.core.util.IdGenerator;
 import com.hellopublic.spring.aws.messaging.test.TestMessageRouter;
 import com.hellopublic.spring.aws.messaging.test.TestMessageRouterFactory;
@@ -23,7 +23,7 @@ public class EventPublisherTest {
         Destination destination = new Destination("dummy", TestMessageRouterFactory.MOCK_DESTINATION_TYPE);
         EventPublisher publisher = new EventPublisher(router, destination,new DefaultHeaderExtractor());
         TestPayloadDto payload = Helper.createPayload();
-        publisher.send(payload);
+        publisher.publish(payload);
 
         assertThat(router.getMessages()).hasSize(1);
         Message message = router.getMessages().get(0);
@@ -42,7 +42,7 @@ public class EventPublisherTest {
         EventPublisher publisher = new EventPublisher(router, destination,new DefaultHeaderExtractor());
         TestPayloadDto payload = Helper.createPayload();
         String clientId = IdGenerator.generateId();
-        publisher.send(payload, clientId);
+        publisher.publish(payload, clientId);
 
         assertThat(router.getMessages()).hasSize(1);
         Message message = router.getMessages().get(0);

@@ -1,7 +1,7 @@
 package com.hellopublic.spring.aws.messaging.persistence.defaults;
 
 import com.hellopublic.spring.aws.messaging.persistence.UndeliveredMessageReSender;
-import com.hellopublic.spring.aws.messaging.persistence.spi.UndeliveredMessageLifecycleManager;
+import com.hellopublic.spring.aws.messaging.persistence.customization.UndeliveredMessageLifecycleManager;
 import org.springframework.context.SmartLifecycle;
 
 /**

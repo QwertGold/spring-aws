@@ -39,14 +39,14 @@ public class PersistentMessageRouterTest extends PersistenceTestCase {
         EventPublisher publisher = messageFactory.createPublisher(dummyDestination);
         TestPayloadDto payload = Helper.createPayload();
 
-        transactionTemplate.executeWithoutResult(status -> publisher.send(payload));
+        transactionTemplate.executeWithoutResult(status -> publisher.publish(payload));
 
         TestMessageRouter testMessageRouter = testEventPublisherFactory.getTestMessageRouter();
         // delivery is async
         Awaitility.await().atMost(10 , TimeUnit.SECONDS)
                 .untilAsserted(() -> assertThat(testMessageRouter.getMessages()).hasSize(1));
 
-        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
+        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findMessagesToResend(10);
         assertThat(unsentMessages).isEmpty();
 
         List<PersistedMessage> allMessages = jdbcMessageRepository.findAllMessages(10);
@@ -60,7 +60,7 @@ public class PersistentMessageRouterTest extends PersistenceTestCase {
 
         EventPublisher publisher = messageFactory.createPublisher(new Destination("dummy", TestMessageRouterFactory.MOCK_DESTINATION_TYPE));
         TestPayloadDto payload = Helper.createPayload();
-        assertThatThrownBy(() -> publisher.send(payload)).isInstanceOf(IllegalStateException.class).hasMessage(PersistentMessageRouter.MISSING_TRANSACTION);
+        assertThatThrownBy(() -> publisher.publish(payload)).isInstanceOf(IllegalStateException.class).hasMessage(PersistentMessageRouter.MISSING_TRANSACTION);
 
     }
 }

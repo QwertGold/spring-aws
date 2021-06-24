@@ -1,12 +1,12 @@
 package com.hellopublic.spring.aws.messaging.sns.defaults;
 
 import com.google.common.base.Preconditions;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
-import com.hellopublic.spring.aws.messaging.sns.spi.SnsRequestBuilder;
-import com.hellopublic.spring.aws.messaging.sns.spi.TopicArnResolver;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
+import com.hellopublic.spring.aws.messaging.sns.customization.SnsRequestBuilder;
+import com.hellopublic.spring.aws.messaging.sns.customization.TopicArnResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue;

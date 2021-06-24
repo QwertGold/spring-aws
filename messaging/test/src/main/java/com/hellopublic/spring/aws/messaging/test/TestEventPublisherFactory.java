@@ -2,8 +2,8 @@ package com.hellopublic.spring.aws.messaging.test;
 
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

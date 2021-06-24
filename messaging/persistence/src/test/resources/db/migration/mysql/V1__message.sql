@@ -15,5 +15,4 @@ create table message
     character set utf8mb4
     collate utf8mb4_unicode_ci
 ;
-create index idx_message__next_send on message (next_send);
-create index idx_message__created_at on message (status, created_at);
+create index idx_message__next_send_status on message (next_send, status);

@@ -1,6 +1,7 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
+import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
 import com.hellopublic.spring.aws.messaging.test.TestEventPublisherFactory;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -20,6 +21,9 @@ public abstract class PersistenceTestCase {
 
     @Autowired
     protected TestEventPublisherFactory testEventPublisherFactory;
+
+    @Autowired
+    private DefaultDispatcher defaultDispatcher;
 
     @Before
     public final void cleanDatabase() {

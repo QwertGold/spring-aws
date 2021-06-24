@@ -1,4 +1,4 @@
-package com.hellopublic.spring.aws.messaging.persistence.spi;
+package com.hellopublic.spring.aws.messaging.persistence.customization;
 
 import java.util.concurrent.Executor;
 
@@ -8,5 +8,5 @@ import java.util.concurrent.Executor;
  * we define a new interface, which is easily adaptable to the existing TaskExecutor framework
  */
 public interface Dispatcher extends Executor {
-
+    int getPendingTasks();
 }

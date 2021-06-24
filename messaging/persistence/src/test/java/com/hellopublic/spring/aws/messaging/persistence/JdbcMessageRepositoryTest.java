@@ -1,14 +1,13 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.Helper;
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
 import com.hellopublic.spring.aws.messaging.persistence.dao.PersistedMessage;
 import org.junit.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,7 +20,7 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
         Message message = Helper.createMessage();
         String id = jdbcMessageRepository.storeMessage(message, Helper.mockDestination());
         assertThat(id).isNotBlank();
-        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
+        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findAllMessages(10);
         assertThat(unsentMessages).hasSize(1);
         PersistedMessage persistedMessage = unsentMessages.get(0);
 
@@ -31,7 +30,7 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
         assertThat(persistedMessage.getCreated()).isNotNull();
 
         jdbcMessageRepository.markAsSent(id);
-        unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
+        unsentMessages = jdbcMessageRepository.findMessagesToResend(10);
         assertThat(unsentMessages).hasSize(0);
     }
 
@@ -43,7 +42,7 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
             jdbcMessageRepository.storeMessage(message, Helper.mockDestination());
         }
 
-        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findUnsentMessages(5);
+        List<PersistedMessage> unsentMessages = jdbcMessageRepository.findAllMessages(5);
         assertThat(unsentMessages).hasSize(5);
         // The test makes an assumption here. For the order to be true, the created_at field must be unique.
         // As long as the database type and the OS uses microsecond resolution, this seems like a fair assumption
@@ -52,9 +51,7 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
         for (PersistedMessage unsentMessage : unsentMessages) {
             jdbcMessageRepository.markAsSent(unsentMessage.getId());
         }
-
-        unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
-        assertThat(unsentMessages).hasSize(5);
+        assertThat(jdbcMessageRepository.countAllUnsentMessages()).isEqualTo(5);
     }
 
 }

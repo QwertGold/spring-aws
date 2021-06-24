@@ -1,26 +1,25 @@
 package com.hellopublic.spring.aws.messaging.sqs.defaults;
 
-import com.google.common.collect.Lists;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
-import com.hellopublic.spring.aws.messaging.sqs.spi.SqsRequestBuilder;
-import com.hellopublic.spring.aws.messaging.sqs.spi.SqsUrlResolver;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
+import com.hellopublic.spring.aws.messaging.sqs.customization.QueueUrlResolver;
+import com.hellopublic.spring.aws.messaging.sqs.customization.SqsRequestBuilder;
 import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
-import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequest;
-import software.amazon.awssdk.services.sqs.model.SendMessageBatchRequestEntry;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Default request builder
+ */
 @RequiredArgsConstructor
 public class DefaultSqsRequestBuilder implements SqsRequestBuilder {
 
-    private final SqsUrlResolver urlResolver;
+    private final QueueUrlResolver urlResolver;
     private final JsonConverter jsonConverter;
 
     @Override

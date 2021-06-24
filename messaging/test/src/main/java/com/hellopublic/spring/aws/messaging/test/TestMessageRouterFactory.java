@@ -7,6 +7,9 @@ import lombok.Getter;
 
 import java.util.Set;
 
+/**
+ * This is only used for testing other parts of the framework
+ */
 public class TestMessageRouterFactory implements MessageRouterFactory {
 
     public static final String MOCK_DESTINATION_TYPE = "MOCK";

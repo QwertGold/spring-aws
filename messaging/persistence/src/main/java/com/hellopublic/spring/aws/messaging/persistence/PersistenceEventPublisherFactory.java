@@ -2,11 +2,11 @@ package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
-import com.hellopublic.spring.aws.messaging.persistence.spi.Dispatcher;
-import com.hellopublic.spring.aws.messaging.persistence.spi.MessageRepository;
+import com.hellopublic.spring.aws.messaging.persistence.customization.Dispatcher;
+import com.hellopublic.spring.aws.messaging.persistence.customization.MessageRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.ConcurrentHashMap;

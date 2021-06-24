@@ -1,6 +1,6 @@
 package com.hellopublic.spring.aws.messaging.sns;
 
-import com.hellopublic.spring.aws.messaging.sns.spi.TopicArnResolver;
+import com.hellopublic.spring.aws.messaging.sns.customization.TopicArnResolver;
 import lombok.Setter;
 
 /**

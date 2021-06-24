@@ -1,7 +1,7 @@
 package com.hellopublic.spring.aws.messaging.core;
 
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Factory for constructing MessageRouter for a given destination type.
+ * Factory for constructing MessageRouter for a given destination type. T
  */
 @RequiredArgsConstructor
 public class EventPublisherFactoryImpl implements EventPublisherFactory {
@@ -26,10 +26,6 @@ public class EventPublisherFactoryImpl implements EventPublisherFactory {
         return new EventPublisher(messageRouter, destination, headerExtractor);
     }
 
-    /**
-     * should not be called by application code. This is intended for framework code which needs access to the MessageRouter, for instance to
-     * perform decoration
-     */
     public MessageRouter getOrCreateRouter(Destination key) {
         return routers.computeIfAbsent(key, this::createRouterForDestination);
     }

@@ -4,9 +4,9 @@ import com.hellopublic.spring.aws.messaging.Helper;
 import com.hellopublic.spring.aws.messaging.TestPayloadDto;
 import com.hellopublic.spring.aws.messaging.core.EventPublisher;
 import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
+import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
-import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +60,7 @@ public class SnsTest {
         EventPublisher publisher = eventPublisherFactory.createPublisher(new Destination(Helper.DESTINATION, SnsMessageRouterFactory.SNS_DESTINATION));
 
         TestPayloadDto payload = Helper.createPayload();
-        publisher.send(payload);
+        publisher.publish(payload);
 
         ReceiveMessageResponse response = sqsClient.receiveMessage(ReceiveMessageRequest.builder().queueUrl(queueUrl)
                 .messageAttributeNames(DefaultHeaderExtractor.CLASS_HEADER_NAME, DefaultHeaderExtractor.EVENT_HEADER_NAME).build());

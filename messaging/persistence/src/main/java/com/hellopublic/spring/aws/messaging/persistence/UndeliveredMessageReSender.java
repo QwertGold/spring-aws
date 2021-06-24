@@ -1,20 +1,17 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.hellopublic.spring.aws.messaging.core.domain.Destination;
+import com.hellopublic.spring.aws.messaging.persistence.customization.MessageRepository;
 import com.hellopublic.spring.aws.messaging.persistence.dao.PersistedMessage;
-import com.hellopublic.spring.aws.messaging.persistence.spi.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * If the PersistentMessageRouter is unable to deliver the message to the real destination, we need to retry.
@@ -36,7 +33,7 @@ public class UndeliveredMessageReSender {
                         .setUncaughtExceptionHandler((t, e) -> log.error("Uncaught exception", e))
                         .build());
 
-        executorService.schedule(this::resend, configuration.getRetryInterval().toSeconds(), TimeUnit.SECONDS);
+        executorService.scheduleWithFixedDelay(this::resend, 0, configuration.getRetryInterval().toSeconds(), TimeUnit.SECONDS);
     }
 
     @SneakyThrows(InterruptedException.class)
@@ -64,7 +61,7 @@ public class UndeliveredMessageReSender {
     protected void resend() {
         try {
             transactionTemplate.executeWithoutResult(status -> {
-                List<PersistedMessage> unsentMessages = messageRepository.findUnsentMessages(100);
+                List<PersistedMessage> unsentMessages = messageRepository.findMessagesToResend(100);
                 for (PersistedMessage unsentMessage : unsentMessages) {
                     try {
                         PersistentMessageRouter messageRouter = persistenceEventPublisherFactory.doCreate(unsentMessage.getDestination());

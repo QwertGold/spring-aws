@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Finds all the MessageRouterFactory beans, and builds a map for each destination type, and validates that there are no overlap in destination type names
+ * This bean allow MessageRouters to be plugged in without any changes to the core module.
  */
 @RequiredArgsConstructor
 public class MessageRouterFactoryManager {

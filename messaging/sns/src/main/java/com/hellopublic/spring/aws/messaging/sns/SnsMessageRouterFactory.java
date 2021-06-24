@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
-import com.hellopublic.spring.aws.messaging.sns.spi.SnsRequestBuilder;
+import com.hellopublic.spring.aws.messaging.sns.customization.SnsRequestBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import software.amazon.awssdk.services.sns.SnsClient;
@@ -12,6 +12,9 @@ import software.amazon.awssdk.services.sns.SnsClient;
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
+/**
+ * Auto discoverable MessageRouterFactory, for the SNS message system
+ */
 @RequiredArgsConstructor
 public class SnsMessageRouterFactory implements MessageRouterFactory {
 

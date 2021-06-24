@@ -1,8 +1,8 @@
 package com.hellopublic.spring.aws.messaging.persistence.defaults;
 
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import com.hellopublic.spring.aws.messaging.persistence.PersistenceConfiguration;
-import com.hellopublic.spring.aws.messaging.persistence.spi.ResendCalculator;
+import com.hellopublic.spring.aws.messaging.persistence.customization.ResendCalculator;
 import lombok.RequiredArgsConstructor;
 
 import java.time.Instant;

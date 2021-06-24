@@ -1,9 +1,9 @@
 package com.hellopublic.spring.aws.messaging.core;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultJsonMapper;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Lazy;
 
 import java.util.List;
 
+/**
+ * Auto configuration for Messaging system. Will fail to configure if there is not at least on dependency creating a MessageRouterFactory bean in the spring
+ * context
+ */
 @Configuration
 public class MessagingAutoConfiguration {
 

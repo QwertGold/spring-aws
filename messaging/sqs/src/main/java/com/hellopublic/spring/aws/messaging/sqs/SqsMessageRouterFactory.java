@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
-import com.hellopublic.spring.aws.messaging.sqs.spi.SqsRequestBuilder;
+import com.hellopublic.spring.aws.messaging.sqs.customization.SqsRequestBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -12,7 +12,9 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import javax.annotation.PostConstruct;
 import java.util.Set;
 
-
+/**
+ * Auto discoverable MessageRouterFactory, for the Sqs message system
+ */
 @RequiredArgsConstructor
 public class SqsMessageRouterFactory implements MessageRouterFactory {
     public static final String SQS_DESTINATION = "SQS";

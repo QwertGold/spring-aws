@@ -1,4 +1,4 @@
-package com.hellopublic.spring.aws.messaging.core.spi;
+package com.hellopublic.spring.aws.messaging.core.customization;
 
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
 

@@ -2,7 +2,7 @@ package com.hellopublic.spring.aws.messaging;
 
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.domain.Message;
+import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import com.hellopublic.spring.aws.messaging.core.util.IdGenerator;
 
 import java.math.BigDecimal;

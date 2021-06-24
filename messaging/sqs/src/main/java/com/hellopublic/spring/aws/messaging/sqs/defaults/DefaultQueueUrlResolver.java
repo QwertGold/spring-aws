@@ -1,7 +1,7 @@
 package com.hellopublic.spring.aws.messaging.sqs.defaults;
 
 import com.google.common.base.Preconditions;
-import com.hellopublic.spring.aws.messaging.sqs.spi.SqsUrlResolver;
+import com.hellopublic.spring.aws.messaging.sqs.customization.QueueUrlResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -10,9 +10,11 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import javax.annotation.PostConstruct;
 import java.util.concurrent.ConcurrentHashMap;
 
-
+/**
+ * Default QueueUrlResolver, which uses the SqsClient API to translate the destination-type to a QueueUrl
+ */
 @RequiredArgsConstructor
-public class DefaultSqsUrlResolver implements SqsUrlResolver {
+public class DefaultQueueUrlResolver implements QueueUrlResolver {
 
     private final ObjectProvider<SqsClient> sqsClientProvider;
     private final ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
@@ -25,8 +27,8 @@ public class DefaultSqsUrlResolver implements SqsUrlResolver {
     }
 
     @Override
-    public String getQueueUrl(String destination) {
-        return cache.computeIfAbsent(destination, this::resolveDestination);
+    public String getQueueUrl(String destinationTarget) {
+        return cache.computeIfAbsent(destinationTarget, this::resolveDestination);
     }
 
     private String resolveDestination(String destination) {

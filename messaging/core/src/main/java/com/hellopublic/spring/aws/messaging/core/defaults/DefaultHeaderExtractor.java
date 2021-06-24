@@ -1,7 +1,7 @@
 package com.hellopublic.spring.aws.messaging.core.defaults;
 
+import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
-import com.hellopublic.spring.aws.messaging.core.spi.HeaderExtractor;
 
 import java.util.Map;
 
