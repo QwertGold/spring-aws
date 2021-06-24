@@ -28,7 +28,6 @@ public class EventPublisherTest {
         assertThat(router.getMessages()).hasSize(1);
         Message message = router.getMessages().get(0);
         assertThat(message.getClientId()).isNotBlank();
-        assertThat(message.getDestination()).isEqualTo(destination);
         assertThat(message.getHeaders())
                 .hasSize(2)
                 .contains(entry(DefaultHeaderExtractor.CLASS_HEADER_NAME, new Header(Header.STRING_TYPE, TestPayloadDto.class.getName())))

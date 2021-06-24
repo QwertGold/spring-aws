@@ -1,6 +1,7 @@
 package com.hellopublic.spring.aws.messaging.sns.defaults;
 
 import com.google.common.base.Preconditions;
+import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Header;
 import com.hellopublic.spring.aws.messaging.core.domain.Message;
 import com.hellopublic.spring.aws.messaging.core.spi.JsonConverter;
@@ -29,10 +30,10 @@ public class DefaultSnsRequestBuilder implements SnsRequestBuilder {
     }
 
     @Override
-    public PublishRequest build(Message message) {
+    public PublishRequest build(Message message, Destination destination) {
 
         PublishRequest.Builder builder = PublishRequest.builder()
-                .topicArn(topicArnResolver.resolveDestination(message.getDestination().getTarget()))
+                .topicArn(topicArnResolver.resolveDestination(destination.getTarget()))
                 .message(jsonMapper.toJson(message.getPayload()));
         encodeHeaders(builder, message);
         return builder.build();

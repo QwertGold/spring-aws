@@ -43,24 +43,25 @@ public class JdbcMessageRepository implements MessageRepository {
 
 
     @Override
-    public String storeMessage(Message message) {
+    public String storeMessage(Message message, Destination destination) {
 
         String id = IdGenerator.generateId();
 
         jdbcTemplate.update(INSERT_QUERY,
                 id,
                 jsonConverter.toJson(message.getPayload()),
-                message.getDestination().getTarget(),
-                message.getDestination().getType(),
+                destination.getTarget(),
+                destination.getType(),
                 jsonConverter.toJson(message.getHeaders()),
                 Timestamp.from(Instant.now()),
-                resendCalculator.calculateNextSend(message),
+                Timestamp.from(resendCalculator.calculateNextSend(message)),
                 message.getPayload().getClass().getName(),
                 UNSENT,
                 message.getClientId()
         );
         return id;
     }
+
 
     @Override
     public List<PersistedMessage> findUnsentMessages(int maxResults) {
@@ -76,11 +77,10 @@ public class JdbcMessageRepository implements MessageRepository {
                 new PersistedMessageRowMapper());
     }
 
-    private Message createMessage(String payloadJson, String clazz, String destinationName, String destinationType, String headers, String clientId) {
+    private Message createMessage(String payloadJson, String clazz, String headers, String clientId) {
         Object payload = jsonConverter.fromJsonByClassName(payloadJson, clazz);
         return new Message()
                 .setPayload(payload)
-                .setDestination(new Destination(destinationName, destinationType))
                 .setHeaders(jsonConverter.readHeaders(headers))
                 .setClientId(clientId)
                 ;
@@ -108,7 +108,8 @@ public class JdbcMessageRepository implements MessageRepository {
 
             return new PersistedMessage()
                     .setId(rs.getString(1))
-                    .setMessage(createMessage(payload, clazz, destinationName, destinationType, headers, clientId))
+                    .setMessage(createMessage(payload, clazz, headers, clientId))
+                    .setDestination(new Destination(destinationName, destinationType))
                     .setCreated(rs.getTimestamp(6).toInstant())
                     .setNextSend(rs.getTimestamp(7).toInstant())
                     .setClazz(clazz)

@@ -52,7 +52,6 @@ public class PersistentMessageRouterTest extends PersistenceTestCase {
         List<PersistedMessage> allMessages = jdbcMessageRepository.findAllMessages(10);
         assertThat(allMessages).hasSize(1);
         PersistedMessage persistedMessage = allMessages.get(0);
-        assertThat(persistedMessage.getMessage().getDestination()).isEqualTo(dummyDestination);
         assertThat(persistedMessage.getStatus()).isEqualTo(JdbcMessageRepository.SENT);
     }
 

@@ -24,4 +24,8 @@ public class IdGenerator {
         return randomStringGenerator.generate(32);
     }
 
+    public static String noClientId() {
+        return "NO-ID-" + generateId();
+    }
+
 }

@@ -16,6 +16,5 @@ public class Message {
      */
     String clientId;
     Object payload;
-    Destination destination;
     Map<String, Header> headers;
 }

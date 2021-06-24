@@ -10,9 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * If the PersistentMessageRouter is unable to deliver the message to the real destination, we need to retry.
@@ -65,16 +67,15 @@ public class UndeliveredMessageReSender {
                 List<PersistedMessage> unsentMessages = messageRepository.findUnsentMessages(100);
                 for (PersistedMessage unsentMessage : unsentMessages) {
                     try {
-                        Destination destination = unsentMessage.getMessage().getDestination();
-                        PersistentMessageRouter messageRouter = persistenceEventPublisherFactory.doCreate(destination);
-                        messageRouter.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId());
+                        PersistentMessageRouter messageRouter = persistenceEventPublisherFactory.doCreate(unsentMessage.getDestination());
+                        messageRouter.forwardAndMarkAsSent(unsentMessage.getMessage(), unsentMessage.getId(), unsentMessage.getDestination());
                     } catch (Exception e) {
-                        log.warn("Unable to re-send message");
+                        log.warn("Unable to re-send messages", e);
                     }
                 }
             });
         } catch (Exception e) {
-            log.error("Error unable to find messages to resend");
+            log.error("Error unable to find messages to resend", e);
         }
     }
 }

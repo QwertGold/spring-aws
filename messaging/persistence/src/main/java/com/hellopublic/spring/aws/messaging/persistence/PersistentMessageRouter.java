@@ -1,5 +1,6 @@
 package com.hellopublic.spring.aws.messaging.persistence;
 
+import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.domain.Message;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouter;
 import com.hellopublic.spring.aws.messaging.persistence.spi.Dispatcher;
@@ -21,20 +22,20 @@ public class PersistentMessageRouter implements MessageRouter {
     private final Dispatcher dispatcher;
 
     @Override
-    public void route(Message message) {
+    public void route(Message message, Destination destination) {
         if (!TransactionSynchronizationManager.isActualTransactionActive()) {
             throw new IllegalStateException(MISSING_TRANSACTION);
         }
-        String id = messageRepository.storeMessage(message);
-        forwardAndMarkAsSent(message, id);
+        String id = messageRepository.storeMessage(message, destination);
+        forwardAndMarkAsSent(message, id, destination);
     }
 
-    protected void forwardAndMarkAsSent(Message message, String id) {
+    protected void forwardAndMarkAsSent(Message message, String id, Destination destination) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
             @Override
             public void afterCommit() {
                 dispatcher.execute(() -> {
-                    delegate.route(message);
+                    delegate.route(message, destination);
                     messageRepository.markAsSent(id);
                 });
             }

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -17,8 +18,8 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
     @Test
     public void given_a_message_is_stored_it_can_be_found_and_marked_as_sent() {
 
-        Message message = Helper.createMessage("MOCK");
-        String id = jdbcMessageRepository.storeMessage(message);
+        Message message = Helper.createMessage();
+        String id = jdbcMessageRepository.storeMessage(message, Helper.mockDestination());
         assertThat(id).isNotBlank();
         List<PersistedMessage> unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
         assertThat(unsentMessages).hasSize(1);
@@ -38,8 +39,8 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
     public void given_more_than_max_rows_are_stored_only_max_rows_are_returned() {
 
         for (int i = 0; i < 10; i++) {
-            Message message = Helper.createMessage("MOCK").setClientId(String.valueOf(i));
-            jdbcMessageRepository.storeMessage(message);
+            Message message = Helper.createMessage().setClientId(String.valueOf(i));
+            jdbcMessageRepository.storeMessage(message, Helper.mockDestination());
         }
 
         List<PersistedMessage> unsentMessages = jdbcMessageRepository.findUnsentMessages(5);
@@ -54,8 +55,6 @@ public abstract class JdbcMessageRepositoryTest extends PersistenceTestCase {
 
         unsentMessages = jdbcMessageRepository.findUnsentMessages(10);
         assertThat(unsentMessages).hasSize(5);
-        clientIds = unsentMessages.stream().map(PersistedMessage::getMessage).map(Message::getClientId).collect(Collectors.toList());
-        assertThat(clientIds).containsExactly("5", "6", "7", "8", "9");
     }
 
 }

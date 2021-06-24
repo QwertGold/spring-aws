@@ -13,8 +13,8 @@ public class Helper {
 
     public static final String DESTINATION = "destination";
 
-    public static Destination createDestination(String destinationType) {
-        return new Destination(DESTINATION, destinationType);
+    public static Destination mockDestination() {
+        return new Destination(DESTINATION, "MOCK");
     }
 
     public static TestPayloadDto createPayload() {
@@ -25,12 +25,11 @@ public class Helper {
                 ;
     }
 
-    public static Message createMessage(String destinationType) {
+    public static Message createMessage() {
         return new Message()
                 .setPayload(createPayload())
-                .setDestination(createDestination(destinationType))
                 .setHeaders(Map.of("name", new Header("String", "value")))
-                .setClientId(IdGenerator.generateId())
+                .setClientId(IdGenerator.noClientId())
                 ;
     }
 }
