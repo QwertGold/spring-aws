@@ -4,6 +4,7 @@ import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.sns.customization.SnsRequestBuilder;
 import com.hellopublic.spring.aws.messaging.sns.customization.TopicArnResolver;
 import com.hellopublic.spring.aws.messaging.sns.defaults.DefaultSnsRequestBuilder;
+import com.hellopublic.spring.aws.messaging.sns.impl.SnsMessageRouterFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

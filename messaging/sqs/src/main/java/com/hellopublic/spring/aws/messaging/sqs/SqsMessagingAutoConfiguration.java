@@ -5,6 +5,7 @@ import com.hellopublic.spring.aws.messaging.sqs.customization.QueueUrlResolver;
 import com.hellopublic.spring.aws.messaging.sqs.customization.SqsRequestBuilder;
 import com.hellopublic.spring.aws.messaging.sqs.defaults.DefaultQueueUrlResolver;
 import com.hellopublic.spring.aws.messaging.sqs.defaults.DefaultSqsRequestBuilder;
+import com.hellopublic.spring.aws.messaging.sqs.impl.SqsMessageRouterFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

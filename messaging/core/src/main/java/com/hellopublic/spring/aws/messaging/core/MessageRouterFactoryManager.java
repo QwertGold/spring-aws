@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * This bean allow MessageRouters to be plugged in without any changes to the core module.
  */
 @RequiredArgsConstructor
-public class MessageRouterFactoryManager {
+public final class MessageRouterFactoryManager {
 
     public static final String NO_ROUTERS = "No registered MessageRouterFactory, you need at least one auto configured MessageRouterFactory to use this api.";
     public static final String MULTIPLE_FACTORIES_FORMAT = "Multiple factories registered for destination '%s': %s";

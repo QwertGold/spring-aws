@@ -1,4 +1,4 @@
-package com.hellopublic.spring.aws.messaging.sns;
+package com.hellopublic.spring.aws.messaging.sns.impl;
 
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.spi.Message;

@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Factory for constructing MessageRouter for a given destination type. T
  */
 @RequiredArgsConstructor
-public class EventPublisherFactoryImpl implements EventPublisherFactory {
+public final class EventPublisherFactoryImpl implements EventPublisherFactory {
 
     private final MessageRouterFactoryManager messageRouterFactoryManager;
     @Getter

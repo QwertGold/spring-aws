@@ -6,14 +6,9 @@ import com.hellopublic.spring.aws.messaging.persistence.customization.Undelivere
 /**
  * So we can control the lifecycle in test, so it is not run automatically in tests.
  */
-public class TestUndeliveredMessageLifecycleManager extends UndeliveredMessageLifecycleManager {
+public class TestUndeliveredMessageLifecycleManager extends UndeliveredMessageLifecycleManager  {
 
     public TestUndeliveredMessageLifecycleManager(UndeliveredMessageReSender undeliveredMessageReSender) {
         super(undeliveredMessageReSender);
-    }
-
-    @Override
-    public boolean isRunning() {
-        return undeliveredMessageReSender.isRunning();
     }
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see UndeliveredMessageReSender
  */
 @RequiredArgsConstructor
-public class PersistenceEventPublisherFactory {
+public final class PersistenceEventPublisherFactory {
 
     private final EventPublisherFactory eventPublisherFactory;
     private final MessageRepository messageRepository;
@@ -27,15 +27,28 @@ public class PersistenceEventPublisherFactory {
     private final HeaderExtractor headerExtractor;
     private final ConcurrentHashMap<Destination, MessageRouter> routers = new ConcurrentHashMap<>();
 
+    /**
+     * Creates a EventPublisher with persistence, so events will be store before delivery, and automatically retried on network failure or crash
+     * @param destination the destination
+     * @return an eventPublisher for the given destination
+     */
     public EventPublisher createPublisher(Destination destination) {
         MessageRouter messageRouter = routers.computeIfAbsent(destination, this::doCreate);
         return new EventPublisher(messageRouter, destination, headerExtractor);
+    }
+
+    /**
+     * Creates a EventPublisher without persistence, if there is a network error or crash delivery will not be retried
+     * @param destination the destination
+     * @return an eventPublisher for the given destination
+     */
+    public EventPublisher createWithoutPersistence(Destination destination) {
+        MessageRouter router = eventPublisherFactory.getOrCreateRouter(destination);
+        return new EventPublisher(router, destination, headerExtractor);
     }
 
     protected PersistentMessageRouter doCreate(Destination destination) {
         MessageRouter router = eventPublisherFactory.getOrCreateRouter(destination);
         return new PersistentMessageRouter(router, messageRepository, dispatcher);
     }
-
-
 }

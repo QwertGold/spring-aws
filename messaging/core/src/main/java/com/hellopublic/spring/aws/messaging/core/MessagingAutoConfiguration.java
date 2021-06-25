@@ -3,7 +3,7 @@ package com.hellopublic.spring.aws.messaging.core;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.hellopublic.spring.aws.messaging.core.customization.HeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
-import com.hellopublic.spring.aws.messaging.core.defaults.DefaultJsonMapper;
+import com.hellopublic.spring.aws.messaging.core.defaults.DefaultJsonConverter;
 import com.hellopublic.spring.aws.messaging.core.spi.MessageRouterFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -27,8 +27,8 @@ public class MessagingAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(JsonMapper.class)
-    DefaultJsonMapper defaultJsonMapper() {
-        return new DefaultJsonMapper();
+    DefaultJsonConverter defaultJsonMapper() {
+        return new DefaultJsonConverter();
     }
 
     @Bean

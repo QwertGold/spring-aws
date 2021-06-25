@@ -5,7 +5,8 @@ import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 /**
- * Abstraction for converting a Message and destination into a SNS specific request
+ * Abstraction for converting a Message and destination into a SNS specific request.
+ * Typically you would keep this default, and just implement a TopicArnResolver
  */
 public interface SnsRequestBuilder {
     /**

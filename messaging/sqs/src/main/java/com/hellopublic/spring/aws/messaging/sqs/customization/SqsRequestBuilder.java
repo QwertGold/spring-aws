@@ -5,7 +5,8 @@ import com.hellopublic.spring.aws.messaging.core.spi.Message;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 /**
- * Abstraction for converting a Message and destination into a SQS specific request
+ * Abstraction for converting a Message and destination into a SQS specific request.
+ * You would typically keep the default, and just implement a QueueUrlResolver
  */
 public interface SqsRequestBuilder {
     /**

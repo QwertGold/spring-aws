@@ -22,7 +22,6 @@ public class DefaultDispatcher implements Dispatcher, SmartLifecycle {
     private final AtomicInteger pendingTasks = new AtomicInteger();
     private ExecutorService executorService;
 
-
     @Override
     public void start() {
         executorService = Executors.newFixedThreadPool(persistenceConfiguration.getDispatchThreads(),

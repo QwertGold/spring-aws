@@ -1,6 +1,7 @@
 package com.hellopublic.spring.aws.messaging.core.defaults;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -12,19 +13,33 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Map;
 
-public class DefaultJsonMapper implements JsonConverter {
+/**
+ * Default implementation, can be extended if you need to change the ObjectMapper slightly
+ */
+public class DefaultJsonConverter implements JsonConverter {
 
     private final ObjectMapper objectMapper = createObjectMapper();
+
     private final MapType headerMapType = objectMapper.getTypeFactory().constructMapType(Map.class, String.class, Header.class);
 
     @NotNull
     private ObjectMapper createObjectMapper() {
-        return new ObjectMapper()
+        ObjectMapper objectMapper = new ObjectMapper()
                 .findAndRegisterModules()
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .enable(com.fasterxml.jackson.core.JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
+                .enable(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN);
+        reconfigure(objectMapper);
+        return objectMapper;
+    }
+
+    /**
+     * Override to provide additional ObjectMapper configuration
+     * @param objectMapper the pre-configured ObjectMapper
+     */
+    protected void reconfigure(ObjectMapper objectMapper) {
+
     }
 
     public String toJson(Object x) {

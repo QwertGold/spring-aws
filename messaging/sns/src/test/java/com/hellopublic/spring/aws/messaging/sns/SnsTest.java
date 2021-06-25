@@ -7,6 +7,7 @@ import com.hellopublic.spring.aws.messaging.core.EventPublisherFactory;
 import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.defaults.DefaultHeaderExtractor;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
+import com.hellopublic.spring.aws.messaging.sns.impl.SnsMessageRouterFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

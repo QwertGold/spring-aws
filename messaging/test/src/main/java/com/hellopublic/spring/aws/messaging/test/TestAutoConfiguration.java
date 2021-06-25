@@ -18,5 +18,4 @@ public class TestAutoConfiguration {
     public TestEventPublisherFactory testEventPublisherFactory( HeaderExtractor headerExtractor) {
         return new TestEventPublisherFactory(headerExtractor);
     }
-
 }

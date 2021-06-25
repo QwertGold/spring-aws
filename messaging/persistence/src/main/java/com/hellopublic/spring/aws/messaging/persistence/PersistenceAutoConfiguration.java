@@ -11,6 +11,7 @@ import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepositor
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultResendCalculator;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultUndeliveredMessageLifecycleManager;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -35,7 +36,7 @@ public class PersistenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MessageRepository.class)
-    public JdbcMessageRepository jdbcMessageRepository(JdbcTemplate jdbcTemplate, ResendCalculator resendCalculator, JsonConverter jsonConverter) {
+    public JdbcMessageRepository jdbcMessageRepository(ObjectProvider<JdbcTemplate> jdbcTemplate, ResendCalculator resendCalculator, JsonConverter jsonConverter) {
         return new JdbcMessageRepository(jdbcTemplate, resendCalculator, jsonConverter);
     }
 

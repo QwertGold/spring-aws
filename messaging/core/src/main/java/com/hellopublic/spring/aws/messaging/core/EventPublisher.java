@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
  * Each instance of this class handles a single destination, unlike the MessageRouter which handles all destinations for a given destination type
  */
 @RequiredArgsConstructor
-public class EventPublisher {
+public final class EventPublisher {
 
     private final MessageRouter router;
     private final Destination destination;

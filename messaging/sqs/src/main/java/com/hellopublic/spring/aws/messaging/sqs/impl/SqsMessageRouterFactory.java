@@ -1,4 +1,4 @@
-package com.hellopublic.spring.aws.messaging.sqs;
+package com.hellopublic.spring.aws.messaging.sqs.impl;
 
 import com.google.common.base.Preconditions;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;

@@ -1,5 +1,6 @@
 package com.hellopublic.spring.aws.messaging.persistence.dao;
 
+import com.google.common.base.Preconditions;
 import com.hellopublic.spring.aws.messaging.core.customization.JsonConverter;
 import com.hellopublic.spring.aws.messaging.core.domain.Destination;
 import com.hellopublic.spring.aws.messaging.core.spi.Message;
@@ -8,10 +9,12 @@ import com.hellopublic.spring.aws.messaging.persistence.customization.MessageRep
 import com.hellopublic.spring.aws.messaging.persistence.customization.ResendCalculator;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.TestOnly;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -38,9 +41,16 @@ public class JdbcMessageRepository implements MessageRepository {
     public static final String UNSENT = "UNSENT";
     public static final String SENT = "SENT";
 
-    private final JdbcTemplate jdbcTemplate;
+    private final ObjectProvider<JdbcTemplate> jdbcTemplateProvider;
     private final ResendCalculator resendCalculator;
     private final JsonConverter jsonConverter;
+    private JdbcTemplate jdbcTemplate;
+
+    @PostConstruct
+    public void checkDependencies() {
+        jdbcTemplate = jdbcTemplateProvider.getIfAvailable();
+        Preconditions.checkNotNull(jdbcTemplate, "Unable to find a JdbcTemplate, this bean is required for persistence dependency.");
+    }
 
     @Override
     public String storeMessage(Message message, Destination destination) {

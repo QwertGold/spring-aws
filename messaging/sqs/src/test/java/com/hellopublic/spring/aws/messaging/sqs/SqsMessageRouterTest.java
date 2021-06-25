@@ -20,7 +20,7 @@ import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
-import static com.hellopublic.spring.aws.messaging.sqs.SqsMessageRouterFactory.SQS_DESTINATION;
+import static com.hellopublic.spring.aws.messaging.sqs.impl.SqsMessageRouterFactory.SQS_DESTINATION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
