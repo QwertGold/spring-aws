@@ -16,6 +16,7 @@ public class PersistenceConfiguration {
     private Duration retryInterval = Duration.ofSeconds(5);
     private Duration nextSend = Duration.ofSeconds(5);
     private int dispatchThreads = 1;
+    private String tableName = "message";
 
     @PostConstruct
     public void validate() {

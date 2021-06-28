@@ -12,7 +12,6 @@ public class PersistedMessage {
     Instant created;
     Instant nextSend;
     String status;
-    String clazz;
     Message message;
     Destination destination;
 }

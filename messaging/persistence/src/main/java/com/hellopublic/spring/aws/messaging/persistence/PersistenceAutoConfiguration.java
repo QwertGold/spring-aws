@@ -8,6 +8,7 @@ import com.hellopublic.spring.aws.messaging.persistence.customization.MessageRep
 import com.hellopublic.spring.aws.messaging.persistence.customization.ResendCalculator;
 import com.hellopublic.spring.aws.messaging.persistence.customization.UndeliveredMessageLifecycleManager;
 import com.hellopublic.spring.aws.messaging.persistence.dao.JdbcMessageRepository;
+import com.hellopublic.spring.aws.messaging.persistence.dao.QueryBuilder;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultDispatcher;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultResendCalculator;
 import com.hellopublic.spring.aws.messaging.persistence.defaults.DefaultUndeliveredMessageLifecycleManager;
@@ -16,6 +17,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -36,8 +38,14 @@ public class PersistenceAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(MessageRepository.class)
-    public JdbcMessageRepository jdbcMessageRepository(ObjectProvider<JdbcTemplate> jdbcTemplate, ResendCalculator resendCalculator, JsonConverter jsonConverter) {
-        return new JdbcMessageRepository(jdbcTemplate, resendCalculator, jsonConverter);
+    public JdbcMessageRepository jdbcMessageRepository(ObjectProvider<JdbcTemplate> jdbcTemplate, ResendCalculator resendCalculator, JsonConverter jsonConverter, QueryBuilder queryBuilder) {
+        return new JdbcMessageRepository(jdbcTemplate, resendCalculator, jsonConverter, queryBuilder);
+    }
+
+    @Bean
+    @Lazy
+    public QueryBuilder queryBuilder(PersistenceConfiguration configuration) {
+        return new QueryBuilder(configuration);
     }
 
     @Bean

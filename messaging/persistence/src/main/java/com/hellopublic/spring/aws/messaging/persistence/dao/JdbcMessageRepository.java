@@ -28,26 +28,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JdbcMessageRepository implements MessageRepository {
 
-    private static final String UPDATE_STATUS = "update message set status = ? where id = ?";
-    private static final String UPDATE_NEXT_SEND = "update message set next_send = ? where id = ?";
-    private static final String INSERT_QUERY = "insert into message " +
-            "(id, payload, destination, " +
-            "destination_type, attributes, created_at, " +
-            "next_send, class, status, client_id) " +
-            "values " +
-            "(?, ?, ?," +
-            " ?, ?, ?," +
-            " ?, ?, ?, ?)";
+
     public static final String UNSENT = "UNSENT";
     public static final String SENT = "SENT";
 
     private final ObjectProvider<JdbcTemplate> jdbcTemplateProvider;
     private final ResendCalculator resendCalculator;
     private final JsonConverter jsonConverter;
+    private final QueryBuilder queryBuilder;
     private JdbcTemplate jdbcTemplate;
 
+
     @PostConstruct
-    public void checkDependencies() {
+    public void checkDependenciesAndCreateQueries() {
         jdbcTemplate = jdbcTemplateProvider.getIfAvailable();
         Preconditions.checkNotNull(jdbcTemplate, "Unable to find a JdbcTemplate, this bean is required for persistence dependency.");
     }
@@ -57,7 +50,7 @@ public class JdbcMessageRepository implements MessageRepository {
 
         String id = IdGenerator.generateId();
 
-        jdbcTemplate.update(INSERT_QUERY,
+        jdbcTemplate.update(queryBuilder.getInsertQuery(),
                 id,
                 jsonConverter.toJson(message.getPayload()),
                 destination.getTarget(),
@@ -74,20 +67,20 @@ public class JdbcMessageRepository implements MessageRepository {
 
     @Override
     public List<PersistedMessage> findMessagesToResend(int maxResults) {
-        return jdbcTemplate.query("select * from message where status = ? and next_send < ? order by next_send",
+        return jdbcTemplate.query(queryBuilder.getSelectMessagesToResend(),
                 new ArgumentPreparedStatementSetterWithLimit(maxResults, JdbcMessageRepository.UNSENT, Timestamp.from(Instant.now())),
                 new PersistedMessageRowMapper());
     }
 
     @TestOnly
     public List<PersistedMessage> findAllMessages(int maxResults) {
-        return jdbcTemplate.query("select * from message order by created_at", new ArgumentPreparedStatementSetterWithLimit(maxResults),
+        return jdbcTemplate.query(queryBuilder.getSelectAllMessages(), new ArgumentPreparedStatementSetterWithLimit(maxResults),
                 new PersistedMessageRowMapper());
     }
 
     @Override
     public long countAllUnsentMessages() {
-        Long count = jdbcTemplate.queryForObject("select count(*) from message where status = ?", Long.class, UNSENT);
+        Long count = jdbcTemplate.queryForObject(queryBuilder.getSelectCountQuery(), Long.class, UNSENT);
         if (count == null) {
             return 0L;
         }
@@ -106,12 +99,12 @@ public class JdbcMessageRepository implements MessageRepository {
 
     @Override
     public void markAsSent(String id) {
-        jdbcTemplate.update(UPDATE_STATUS, SENT, id);
+        jdbcTemplate.update(queryBuilder.getUpdateStatusQuery(), SENT, id);
     }
 
     @Override
     public void resendFailed(Message message, String id) {
-        jdbcTemplate.update(UPDATE_NEXT_SEND, Timestamp.from(resendCalculator.calculateNextSend(message)), id);
+        jdbcTemplate.update(queryBuilder.getUpdateNextSendQuery(), Timestamp.from(resendCalculator.calculateNextSend(message)), id);
     }
 
     @TestOnly
@@ -135,7 +128,6 @@ public class JdbcMessageRepository implements MessageRepository {
                     .setDestination(new Destination(destinationName, destinationType))
                     .setCreated(rs.getTimestamp(6).toInstant())
                     .setNextSend(rs.getTimestamp(7).toInstant())
-                    .setClazz(clazz)
                     .setStatus(rs.getString(9))
                     ;
 
